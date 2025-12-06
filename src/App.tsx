@@ -16,6 +16,7 @@ import TeamPage from "./pages/private/Teams/TeamPage";
 import SolveQuiz from "./pages/private/Teams/TeamPageComponents/SolveQuiz";
 import CreateQuiz from "./pages/private/Teams/TeamPageComponents/CreateQuiz";
 import PrivateCallPage from "./pages/private/Calls/PrivateCallPage";
+import CreateEvent from "./pages/private/Teams/TeamPageComponents/CreateEvent";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/teams/:teamId/quizzes/create" element={<CreateQuiz />} />
             <Route path="/teams/:teamId/quizzes/:quizId/solve" element={<SolveQuiz />} />
             <Route path="/private-call/:roomId" element={<PrivateCallPage />} />
+            <Route path="/teams/:teamId/events/create" element={<CreateEvent />} />
           </Route>
 
         </Routes>
