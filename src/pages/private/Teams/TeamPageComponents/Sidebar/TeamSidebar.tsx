@@ -183,7 +183,9 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
           </Collapsible>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
+              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+                onClick={() => openScreenFn("Files")}
+              >
                   <div className="flex items-center gap-10">
                     <FolderClosed/>
                     Team Files
@@ -225,7 +227,7 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="border rounded-t-4xl hover:bg-accent cursor-pointer"
+        <SidebarFooter className="border-t rounded-t-4xl rounded-b-lg hover:bg-accent cursor-pointer overflow-hidden"
           onClick={() => navigate("/home")}
         >
           <div className=" flex items-center justify-center gap-x-2 pr-5">
