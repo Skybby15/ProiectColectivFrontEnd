@@ -25,21 +25,16 @@ export function AddFileDialog({uploadFileToTeam} : {uploadFileToTeam?: (file: Fi
 
   const handleUpload = () => {
     if (!file) return
-
-    const formData = new FormData()
-    formData.append("file", file)
     
     if (uploadFileToTeam) {
-      uploadFileToTeam(file)
+      uploadFileToTeam(file) //TODO: bind to backend
     }
-
-    console.log("Uploading:", file.size , " bytes ")
 
     setLoading(true)
     setTimeout(()=>{
       setLoading(false)    
       toast.success("File uploaded successfully")
-    }, 2000) // Simulate upload delay
+    }, 2000) // TODO remove 
     setFile(null)
   }
 
