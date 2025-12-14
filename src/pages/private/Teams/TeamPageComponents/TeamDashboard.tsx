@@ -206,7 +206,7 @@ export function TeamDashboard({teamId} : {teamId : string}) {
                                                 </Avatar>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium truncate">
-                                                        {userId || `Member ${index + 1}`}
+                                                        {`Member ${index + 1}`}
                                                     </p>
                                                 </div>
                                             </div>
