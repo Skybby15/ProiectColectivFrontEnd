@@ -153,7 +153,7 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
           { loading == false && teamMessages.length != 0 && 
           <ScrollArea 
             ref={scrollAreaRef}
-            className="relative p-4 h-184"
+            className="relative p-4 h-[70vh]" 
           >
             <div className="space-y-4">
               {teamMessages.map((message,index) => (
@@ -198,7 +198,7 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
           }
 
           {/* Input Area */}
-          <div className="border-t p-4 bg-background flex gap-2">
+          <div className="border-t p-4 bg-background flex gap-2 justify-self-end">
             <Input
               placeholder="Type a message..."
               value={inputValue}

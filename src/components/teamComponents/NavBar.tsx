@@ -63,6 +63,14 @@ export default function Navbar() {
                                         </Suspense>
                                     )}
                                 </div>
+                                {/* Global call notifier (shows incoming private call on any page) */}
+                                <div>
+                                    {typeof window !== 'undefined' && (
+                                        <Suspense fallback={null}>
+                                            <CallNotifier />
+                                        </Suspense>
+                                    )}
+                                </div>
             </div>
         </div>
     );

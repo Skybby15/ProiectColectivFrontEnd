@@ -1,7 +1,7 @@
 import { createOrGetAudioElement, assignRemoteStreamToAudio, tryPlayAudioElement } from './audioUtils';
 
 export function ensurePeerConnectionForReady(from: string, ctx: any) {
-  const { pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, conn, addUser } = ctx;
+  const { pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, conn, user, addUser, fetchAndUpdateUserInfo, setUsers, setSpeaking } = ctx;
   if (pcRefs[from]) return pcRefs[from];
 
   const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
@@ -34,10 +34,12 @@ export function ensurePeerConnectionForReady(from: string, ctx: any) {
 
   pcRefs[from] = pc;
 
-  if (localStreamRef) {
+  // localStreamRef is a ref object, access .current for the actual stream
+  const stream = localStreamRef?.current;
+  if (stream) {
     try {
-      localStreamRef.getTracks().forEach((t: MediaStreamTrack) => {
-        try { pc.addTrack(t, localStreamRef); } catch (e) {}
+      stream.getTracks().forEach((t: MediaStreamTrack) => {
+        try { pc.addTrack(t, stream); } catch (e) {}
       });
     } catch {}
   }
@@ -111,6 +113,8 @@ export function ensurePeerConnectionForReady(from: string, ctx: any) {
 
 export async function handleSdpMessage(from: string, sdp: any, ctx: any) {
   const { pcRefs, localStreamRef, pcOfferTimersRef, conn, audioElsRef, audioCtxRef, addUser } = ctx;
+  // localStreamRef is a ref object, access .current for the actual stream
+  const stream = localStreamRef?.current;
   try { if (pcOfferTimersRef[from]) { clearTimeout(pcOfferTimersRef[from]); delete pcOfferTimersRef[from]; } } catch {}
   // recreate PC if missing or closed to handle late-arriving SDP/ICE
   if (!pcRefs[from] || (pcRefs[from] && (pcRefs[from].signalingState === 'closed' || pcRefs[from].connectionState === 'closed'))) {
@@ -121,7 +125,7 @@ export async function handleSdpMessage(from: string, sdp: any, ctx: any) {
     }
     const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
     pcRefs[from] = pc;
-    if (localStreamRef) try { localStreamRef.getTracks().forEach((t: MediaStreamTrack) => pc.addTrack(t, localStreamRef)); } catch {}
+    if (stream) try { stream.getTracks().forEach((t: MediaStreamTrack) => pc.addTrack(t, stream)); } catch {}
     pc.ontrack = (ev: any) => {
       try {
         const remoteStream = ev.streams && ev.streams[0] ? ev.streams[0] : new MediaStream([ev.track]);
@@ -147,7 +151,7 @@ export async function handleSdpMessage(from: string, sdp: any, ctx: any) {
       try { delete pcRefs[from]; } catch {}
       const newPc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
       pcRefs[from] = newPc;
-      if (localStreamRef) try { localStreamRef.getTracks().forEach((t: MediaStreamTrack) => newPc.addTrack(t, localStreamRef)); } catch {}
+      if (stream) try { stream.getTracks().forEach((t: MediaStreamTrack) => newPc.addTrack(t, stream)); } catch {}
       newPc.ontrack = (ev: any) => {
         const remoteStream = ev.streams && ev.streams[0] ? ev.streams[0] : new MediaStream([ev.track]);
         const audioEl = createOrGetAudioElement(from, audioElsRef);

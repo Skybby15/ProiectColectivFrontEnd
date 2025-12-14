@@ -12,6 +12,8 @@ export function createSignalingConnection(params: {
   setJoined: (v: boolean) => void;
   setUsers: (u: any[]) => void;
   setSpeaking?: (id: string, val: boolean) => void;
+  setPresenterId?: (id?: string) => void;
+  setIsMuted?: (v: boolean) => void;
   addUser: (u: any) => void;
   removeUser: (id: string) => void;
   pcRefs: Record<string, RTCPeerConnection>;
@@ -21,8 +23,13 @@ export function createSignalingConnection(params: {
   audioCtxRef: { current: any } | null;
   apiRef: { current: any } | null;
   onCallEnded?: () => void;
+  screenVideoRef?: { current: HTMLVideoElement | null };
+  screenPcRef?: { current: RTCPeerConnection | null };
+  screenPcsRef?: { current: Record<string, RTCPeerConnection> };
+  setScreenStream?: (stream?: MediaStream) => void;
+  onScreenShareSubscribe?: (viewerId: string) => void;
 }) {
-  const { selectedRoomId, userId, token, authUser, setWs, setJoined, setUsers, setSpeaking, addUser, removeUser, pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, apiRef, onCallEnded } = params;
+  const { selectedRoomId, userId, token, authUser, setWs, setJoined, setUsers, setSpeaking, setPresenterId, setIsMuted, addUser, removeUser, pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, apiRef, onCallEnded, screenVideoRef, screenPcRef, screenPcsRef, setScreenStream, onScreenShareSubscribe } = params;
   console.log('[voiceSignaling] createSignalingConnection params:', { selectedRoomId, userId, token });
   // Build a join URL that matches backend route: /voice/join/{roomId}?userId={userId}
   const base = buildJoinWsUrl(String(selectedRoomId), String(userId));
@@ -50,16 +57,19 @@ export function createSignalingConnection(params: {
   }
 
   conn.onopen = async () => {
+    // Join room immediately, microphone is optional
+    setJoined(true);
+    const localName = (authUser && (authUser.username || authUser.name)) ? (authUser.username || authUser.name) : `You`;
+    addUser({ userId: String(userId), username: localName });
+    try { sendSafe({ type: 'ready' }); } catch {}
+    
+    // Try to get microphone access, but don't block join if denied
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       localStreamRef.current = stream;
-      setJoined(true);
-      // prefer authenticated username when available
-      const localName = (authUser && (authUser.username || authUser.name)) ? (authUser.username || authUser.name) : `You`;
-      addUser({ userId: String(userId), username: localName });
-      try { sendSafe({ type: 'ready' }); } catch {}
+      if (setIsMuted) setIsMuted(false);
 
-      // VAD
+      // VAD (Voice Activity Detection)
       try {
         const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
         const audioCtx = new AudioCtx();
@@ -88,8 +98,12 @@ export function createSignalingConnection(params: {
           requestAnimationFrame(sample);
         };
         sample();
-      } catch (e) {}
-    } catch (e) { console.error('getUserMedia failed', e); }
+      } catch (e) { console.warn('[voiceSignaling] VAD setup failed', e); }
+    } catch (e) {
+      // Microphone access denied - join as muted listener
+      console.warn('[voiceSignaling] Microphone access denied, joining as muted', e);
+      if (setIsMuted) setIsMuted(true);
+    }
   };
 
   conn.onmessage = async (evt) => {
@@ -108,6 +122,15 @@ export function createSignalingConnection(params: {
         // normalize and prefer authenticated user's username when present
         const normalized = normalizeRoomUsers(msg.users, authUser || { id: userId });
         setUsers(normalized);
+        // Also set the presenterId if present in room-info
+        if (setPresenterId) {
+          setPresenterId(msg.presenterId || undefined);
+        }
+        // If there's an active presenter and it's not us, subscribe to their screen share
+        if (msg.presenterId && msg.presenterId !== String(userId)) {
+          console.log('[voiceSignaling] room-info has presenter, subscribing to:', msg.presenterId);
+          sendSafe({ type: 'screenshare-subscribe', to: msg.presenterId });
+        }
         normalized.forEach((u: any) => {
           if (String(userId) !== String(u.userId) && (!u.username || u.username === u.userId)) {
             fetchAndUpdateUserInfo(apiRef ? apiRef.current : null, String(u.userId), setUsers);
@@ -122,7 +145,7 @@ export function createSignalingConnection(params: {
           ensurePeerConnectionForReady(String(from), {
             pcRefs,
             pcOfferTimersRef,
-            localStreamRef: localStreamRef.current,
+            localStreamRef: localStreamRef,
             audioElsRef,
             audioCtxRef,
             conn,
@@ -136,7 +159,7 @@ export function createSignalingConnection(params: {
         return;
       }
       if (msg.type === 'sdp' && msg.sdp && from) {
-        try { await handleSdpMessage(String(from), msg.sdp, { pcRefs, localStreamRef: localStreamRef.current, pcOfferTimersRef, conn, audioElsRef, audioCtxRef, addUser }); } catch (e) { console.warn('handleSdpMessage failed', e); }
+        try { await handleSdpMessage(String(from), msg.sdp, { pcRefs, localStreamRef: localStreamRef, pcOfferTimersRef, conn, audioElsRef, audioCtxRef, addUser }); } catch (e) { console.warn('handleSdpMessage failed', e); }
         return;
       }
       if (msg.type === 'ice' && msg.candidate && from) {
@@ -146,6 +169,107 @@ export function createSignalingConnection(params: {
       if (msg.type === 'activity' && from) {
         try { setSpeaking && setSpeaking(String(from), !!msg.active); } catch {}
         addUser(String(from));
+        return;
+      }
+      // Handle screen-state broadcasts from the server
+      if (msg.type === 'screen-state') {
+        console.log('[voiceSignaling] screen-state received:', msg);
+        if (setPresenterId) {
+          setPresenterId(msg.presenterId || undefined);
+        }
+        // If screen sharing is active and we're not the presenter, subscribe
+        if (msg.active && msg.presenterId && msg.presenterId !== String(userId)) {
+          console.log('[voiceSignaling] Subscribing to presenter:', msg.presenterId);
+          sendSafe({ type: 'screenshare-subscribe', to: msg.presenterId });
+        }
+        // If screen sharing stopped, clear the screen stream
+        if (!msg.active && setScreenStream) {
+          setScreenStream(undefined);
+          if (screenVideoRef?.current) {
+            screenVideoRef.current.srcObject = null;
+          }
+          if (screenPcRef?.current) {
+            try { screenPcRef.current.close(); } catch {}
+            screenPcRef.current = null;
+          }
+        }
+        return;
+      }
+      // Handle incoming offer from the presenter (viewer side)
+      if (msg.type === 'offer' && msg.sdp && from) {
+        console.log('[voiceSignaling] offer received from presenter:', from, 'sdp type:', msg.sdp?.type);
+        try {
+          // Create a new RTCPeerConnection to receive the screen share
+          const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+          if (screenPcRef) screenPcRef.current = pc;
+          
+          pc.ontrack = (ev) => {
+            console.log('[voiceSignaling] screen track received, streams:', ev.streams.length);
+            if (screenVideoRef?.current && ev.streams[0]) {
+              console.log('[voiceSignaling] Setting screen video srcObject');
+              screenVideoRef.current.srcObject = ev.streams[0];
+              screenVideoRef.current.play().catch(e => console.warn('[voiceSignaling] video play failed', e));
+              if (setScreenStream) setScreenStream(ev.streams[0]);
+            }
+          };
+          
+          pc.onconnectionstatechange = () => {
+            console.log('[voiceSignaling] Viewer screen PC connection state:', pc.connectionState);
+          };
+          
+          pc.onicecandidate = (ev) => {
+            if (ev.candidate) {
+              sendSafe({ type: 'ice-candidate', candidate: ev.candidate, to: from });
+            }
+          };
+          
+          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          sendSafe({ type: 'answer', sdp: pc.localDescription, to: from });
+          console.log('[voiceSignaling] Viewer sent answer to presenter:', from);
+        } catch (e) {
+          console.error('[voiceSignaling] offer handling failed', e);
+        }
+        return;
+      }
+      // Handle answer from viewer (presenter side)
+      if (msg.type === 'answer' && msg.sdp && from) {
+        console.log('[voiceSignaling] answer received from viewer:', from);
+        try {
+          // If we are the presenter, we have multiple PCs (one per viewer)
+          const pc = screenPcsRef?.current?.[String(from)];
+          if (pc) {
+            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            console.log('[voiceSignaling] Presenter applied answer from viewer:', from);
+          }
+        } catch (e) {
+          console.error('[voiceSignaling] answer handling failed', e);
+        }
+        return;
+      }
+      // Handle ice-candidate
+      if (msg.type === 'ice-candidate' && msg.candidate && from) {
+        console.log('[voiceSignaling] ice-candidate received from:', from);
+        try {
+          // Check if we have a PC for this user (as presenter) or use viewer PC
+          const pc = screenPcsRef?.current?.[String(from)] || screenPcRef?.current;
+          if (pc) {
+            await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+            console.log('[voiceSignaling] Added ICE candidate from:', from);
+          }
+        } catch (e) {
+          console.error('[voiceSignaling] ice-candidate handling failed', e);
+        }
+        return;
+      }
+      // Handle screenshare-subscribe from viewer (presenter side)
+      if (msg.type === 'screenshare-subscribe' && from) {
+        console.log('[voiceSignaling] screenshare-subscribe received from viewer:', from);
+        // This will be handled in the component via a callback
+        if (onScreenShareSubscribe) {
+          onScreenShareSubscribe(String(from));
+        }
         return;
       }
       if (msg.type === 'user-left' && msg.userId) {
