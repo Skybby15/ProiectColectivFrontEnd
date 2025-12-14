@@ -10,6 +10,9 @@ docs/DefaultApi.md
 docs/DtoAddUserToTeamResponse.md
 docs/DtoCreateQuizResponse.md
 docs/DtoDirectMessageRequest.md
+docs/DtoFileListResponse.md
+docs/DtoFileUploadRequest.md
+docs/DtoFileUploadResponse.md
 docs/DtoFriendRequestListResponse.md
 docs/DtoFriendRequestResponse.md
 docs/DtoLoginRequest.md
@@ -34,6 +37,7 @@ docs/DtoUserResponse.md
 docs/DtoUserToTeamRequest.md
 docs/DtoUserUpdateRequestDTO.md
 docs/DtoUserUpdateResponseDTO.md
+docs/EntityFile.md
 docs/EntityQuestion.md
 docs/EntityQuiz.md
 docs/EntityTeam.md

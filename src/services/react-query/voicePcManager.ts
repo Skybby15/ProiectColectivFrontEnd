@@ -1,7 +1,7 @@
 import { createOrGetAudioElement, assignRemoteStreamToAudio, tryPlayAudioElement } from './audioUtils';
 
 export function ensurePeerConnectionForReady(from: string, ctx: any) {
-  const { pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, conn, user, addUser, fetchAndUpdateUserInfo, setUsers, setSpeaking } = ctx;
+  const { pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, conn, addUser } = ctx;
   if (pcRefs[from]) return pcRefs[from];
 
   const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });

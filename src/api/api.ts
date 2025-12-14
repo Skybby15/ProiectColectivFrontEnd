@@ -48,6 +48,41 @@ export interface DtoDirectMessageRequest {
     'senderId'?: string;
     'textContent'?: string;
 }
+export interface DtoFileListResponse {
+    'files'?: Array<DtoFileUploadResponse>;
+    'limit'?: number;
+    'page'?: number;
+    'totalCount'?: number;
+    'totalPages'?: number;
+}
+export interface DtoFileUploadRequest {
+    'content': string;
+    /**
+     * Set automatically from URL (teamId or chatId)
+     */
+    'contextId'?: string;
+    /**
+     * Set automatically from URL (\"team\" or \"chat\")
+     */
+    'contextType'?: string;
+    'extension': string;
+    'name': string;
+    'ownerId': string;
+    'size': number;
+    'type': string;
+}
+export interface DtoFileUploadResponse {
+    'contextId'?: string;
+    'contextType'?: string;
+    'createdAt'?: number;
+    'extension'?: string;
+    'id'?: string;
+    'name'?: string;
+    'ownerId'?: string;
+    'size'?: number;
+    'type'?: string;
+    'updatedAt'?: number;
+}
 export interface DtoFriendRequestListResponse {
     'requests'?: Array<DtoFriendRequestResponse>;
 }
@@ -185,6 +220,25 @@ export interface DtoUserUpdateResponseDTO {
     'teams'?: Array<string>;
     'topicsOfInterest'?: Array<ModelTopicOfInterest>;
     'username'?: string;
+}
+export interface EntityFile {
+    'content'?: string;
+    /**
+     * teamId or chatId
+     */
+    'contextId'?: string;
+    /**
+     * \"team\" or \"chat\"
+     */
+    'contextType'?: string;
+    'createdAt'?: number;
+    'extension'?: string;
+    'id'?: string;
+    'name'?: string;
+    'ownerId'?: string;
+    'size'?: number;
+    'type'?: string;
+    'updatedAt'?: number;
 }
 export interface EntityQuestion {
     'answers'?: Array<string>;
@@ -978,6 +1032,178 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete a file
+         * @param {string} id Team ID
+         * @param {string} fileId File ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesFileIdDelete: async (id: string, fileId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamsIdFilesFileIdDelete', 'id', id)
+            // verify required parameter 'fileId' is not null or undefined
+            assertParamExists('teamsIdFilesFileIdDelete', 'fileId', fileId)
+            const localVarPath = `/teams/{id}/files/{fileId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"fileId"}}`, encodeURIComponent(String(fileId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get file by id (with content)
+         * @param {string} id Team ID
+         * @param {string} fileId File ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesFileIdGet: async (id: string, fileId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamsIdFilesFileIdGet', 'id', id)
+            // verify required parameter 'fileId' is not null or undefined
+            assertParamExists('teamsIdFilesFileIdGet', 'fileId', fileId)
+            const localVarPath = `/teams/{id}/files/{fileId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"fileId"}}`, encodeURIComponent(String(fileId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get all files for a team (metadata only, paginated)
+         * @param {string} id Team ID
+         * @param {number} [page] Page number (default 1)
+         * @param {number} [limit] Items per page (default 10, max 100)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesGet: async (id: string, page?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamsIdFilesGet', 'id', id)
+            const localVarPath = `/teams/{id}/files`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Upload a file to a team (base64 content)
+         * @param {string} id Team ID
+         * @param {DtoFileUploadRequest} request File upload request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesPost: async (id: string, request: DtoFileUploadRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamsIdFilesPost', 'id', id)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('teamsIdFilesPost', 'request', request)
+            const localVarPath = `/teams/{id}/files`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2072,6 +2298,63 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * 
+         * @summary Delete a file
+         * @param {string} id Team ID
+         * @param {string} fileId File ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamsIdFilesFileIdDelete(id: string, fileId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: string; }>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamsIdFilesFileIdDelete(id, fileId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamsIdFilesFileIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get file by id (with content)
+         * @param {string} id Team ID
+         * @param {string} fileId File ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamsIdFilesFileIdGet(id: string, fileId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityFile>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamsIdFilesFileIdGet(id, fileId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamsIdFilesFileIdGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get all files for a team (metadata only, paginated)
+         * @param {string} id Team ID
+         * @param {number} [page] Page number (default 1)
+         * @param {number} [limit] Items per page (default 10, max 100)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamsIdFilesGet(id: string, page?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoFileListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamsIdFilesGet(id, page, limit, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamsIdFilesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Upload a file to a team (base64 content)
+         * @param {string} id Team ID
+         * @param {DtoFileUploadRequest} request File upload request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamsIdFilesPost(id: string, request: DtoFileUploadRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoFileUploadResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamsIdFilesPost(id, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamsIdFilesPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get team details by ID
          * @summary Get a team by ID
          * @param {string} id Team ID
@@ -2548,6 +2831,51 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.teamsIdDelete(id, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary Delete a file
+         * @param {string} id Team ID
+         * @param {string} fileId File ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesFileIdDelete(id: string, fileId: string, options?: RawAxiosRequestConfig): AxiosPromise<{ [key: string]: string; }> {
+            return localVarFp.teamsIdFilesFileIdDelete(id, fileId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get file by id (with content)
+         * @param {string} id Team ID
+         * @param {string} fileId File ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesFileIdGet(id: string, fileId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityFile> {
+            return localVarFp.teamsIdFilesFileIdGet(id, fileId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get all files for a team (metadata only, paginated)
+         * @param {string} id Team ID
+         * @param {number} [page] Page number (default 1)
+         * @param {number} [limit] Items per page (default 10, max 100)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesGet(id: string, page?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<DtoFileListResponse> {
+            return localVarFp.teamsIdFilesGet(id, page, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Upload a file to a team (base64 content)
+         * @param {string} id Team ID
+         * @param {DtoFileUploadRequest} request File upload request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdFilesPost(id: string, request: DtoFileUploadRequest, options?: RawAxiosRequestConfig): AxiosPromise<DtoFileUploadResponse> {
+            return localVarFp.teamsIdFilesPost(id, request, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get team details by ID
          * @summary Get a team by ID
          * @param {string} id Team ID
@@ -2973,6 +3301,55 @@ export class DefaultApi extends BaseAPI {
      */
     public teamsIdDelete(id: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).teamsIdDelete(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete a file
+     * @param {string} id Team ID
+     * @param {string} fileId File ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamsIdFilesFileIdDelete(id: string, fileId: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamsIdFilesFileIdDelete(id, fileId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get file by id (with content)
+     * @param {string} id Team ID
+     * @param {string} fileId File ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamsIdFilesFileIdGet(id: string, fileId: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamsIdFilesFileIdGet(id, fileId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get all files for a team (metadata only, paginated)
+     * @param {string} id Team ID
+     * @param {number} [page] Page number (default 1)
+     * @param {number} [limit] Items per page (default 10, max 100)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamsIdFilesGet(id: string, page?: number, limit?: number, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamsIdFilesGet(id, page, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Upload a file to a team (base64 content)
+     * @param {string} id Team ID
+     * @param {DtoFileUploadRequest} request File upload request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamsIdFilesPost(id: string, request: DtoFileUploadRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamsIdFilesPost(id, request, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

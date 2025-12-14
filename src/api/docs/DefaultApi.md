@@ -21,6 +21,10 @@ All URIs are relative to *http://localhost*
 |[**quizzesUserUserIdTeamTeamIdGet**](#quizzesuseruseridteamteamidget) | **GET** /quizzes/user/{userId}/team/{teamId} | Get quizzes by user with pagination|
 |[**teamsGet**](#teamsget) | **GET** /teams | Get teams with optional filtering|
 |[**teamsIdDelete**](#teamsiddelete) | **DELETE** /teams/{id} | Delete a team|
+|[**teamsIdFilesFileIdDelete**](#teamsidfilesfileiddelete) | **DELETE** /teams/{id}/files/{fileId} | Delete a file|
+|[**teamsIdFilesFileIdGet**](#teamsidfilesfileidget) | **GET** /teams/{id}/files/{fileId} | Get file by id (with content)|
+|[**teamsIdFilesGet**](#teamsidfilesget) | **GET** /teams/{id}/files | Get all files for a team (metadata only, paginated)|
+|[**teamsIdFilesPost**](#teamsidfilespost) | **POST** /teams/{id}/files | Upload a file to a team (base64 content)|
 |[**teamsIdGet**](#teamsidget) | **GET** /teams/{id} | Get a team by ID|
 |[**teamsIdPut**](#teamsidput) | **PUT** /teams/{id} | Update a team|
 |[**teamsPost**](#teamspost) | **POST** /teams | Create a new team|
@@ -981,6 +985,233 @@ const { status, data } = await apiInstance.teamsIdDelete(
 |-------------|-------------|------------------|
 |**200** | Team deleted |  -  |
 |**400** | Bad Request: Missing team ID |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamsIdFilesFileIdDelete**
+> { [key: string]: string; } teamsIdFilesFileIdDelete()
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team ID (default to undefined)
+let fileId: string; //File ID (default to undefined)
+
+const { status, data } = await apiInstance.teamsIdFilesFileIdDelete(
+    id,
+    fileId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Team ID | defaults to undefined|
+| **fileId** | [**string**] | File ID | defaults to undefined|
+
+
+### Return type
+
+**{ [key: string]: string; }**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**403** | Forbidden |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamsIdFilesFileIdGet**
+> EntityFile teamsIdFilesFileIdGet()
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team ID (default to undefined)
+let fileId: string; //File ID (default to undefined)
+
+const { status, data } = await apiInstance.teamsIdFilesFileIdGet(
+    id,
+    fileId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Team ID | defaults to undefined|
+| **fileId** | [**string**] | File ID | defaults to undefined|
+
+
+### Return type
+
+**EntityFile**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**403** | Forbidden |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamsIdFilesGet**
+> DtoFileListResponse teamsIdFilesGet()
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team ID (default to undefined)
+let page: number; //Page number (default 1) (optional) (default to undefined)
+let limit: number; //Items per page (default 10, max 100) (optional) (default to undefined)
+
+const { status, data } = await apiInstance.teamsIdFilesGet(
+    id,
+    page,
+    limit
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Team ID | defaults to undefined|
+| **page** | [**number**] | Page number (default 1) | (optional) defaults to undefined|
+| **limit** | [**number**] | Items per page (default 10, max 100) | (optional) defaults to undefined|
+
+
+### Return type
+
+**DtoFileListResponse**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**403** | Forbidden |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamsIdFilesPost**
+> DtoFileUploadResponse teamsIdFilesPost(request)
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration,
+    DtoFileUploadRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team ID (default to undefined)
+let request: DtoFileUploadRequest; //File upload request
+
+const { status, data } = await apiInstance.teamsIdFilesPost(
+    id,
+    request
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **request** | **DtoFileUploadRequest**| File upload request | |
+| **id** | [**string**] | Team ID | defaults to undefined|
+
+
+### Return type
+
+**DtoFileUploadResponse**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** | Created |  -  |
+|**400** | Bad Request |  -  |
+|**403** | Forbidden |  -  |
 |**500** | Internal Server Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
