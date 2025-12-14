@@ -1,5 +1,5 @@
-import {useMutation} from "@tanstack/react-query";
-import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, EntityTeam} from "@/api";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoFileListResponse, DtoFileUploadRequest, DtoFileUploadResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, EntityTeam} from "@/api";
 import { api } from './api'
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";
 import { useAuthStore } from "../stores/useAuthStore";
@@ -124,3 +124,46 @@ export const useSendTeamMessage = () => {
         }
     })
 }
+
+export const useAddTeamFile = () => {
+    const teamStore = useTeamStore();
+
+    return useMutation<DtoFileUploadResponse, Error, { teamId : string, request: DtoFileUploadRequest}>({
+        mutationFn: ({ teamId, request }) => 
+            api.teamsIdFilesPost(
+                teamId,
+                request
+            ).then(res => res.data),
+
+        onSuccess: (data) => {
+            teamStore.addTeamFile(data);
+        },
+
+        onError: (err) => {
+            console.error("Error uploading file:", err);
+        }
+    })
+}
+
+
+export const useGetTeamFiles = () => {
+    const teamStore = useTeamStore();
+
+    return useMutation<DtoFileListResponse, Error, {teamId: string, page: number, limit: number}>({
+        mutationFn: ({teamId,page,limit}) =>
+        api.teamsIdFilesGet(
+            teamId, 
+            page, 
+            limit
+        ).then(res => res.data),
+
+        onSuccess: (data) => {
+            console.log("Success")
+        teamStore.addTeamFilesMeta(data.files || []);
+        },
+
+        onError: (err) => {
+        console.error("Error fetching team files:", err);
+        }
+    }) 
+};
