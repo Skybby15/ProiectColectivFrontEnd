@@ -58,7 +58,7 @@ export default function PrivateCallPage() {
       return new Promise((resolve, reject) => {
         let settled = false;
         try {
-          const socket = new WebSocket(`ws://${WSPATH}/messages/connect?token=${auth.token}`);
+          const socket = new WebSocket(`wss://${WSPATH}/messages/connect?token=${auth.token}`);
 
           const timer = window.setTimeout(() => {
             if (settled) return;

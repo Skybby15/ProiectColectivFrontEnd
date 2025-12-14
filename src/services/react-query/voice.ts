@@ -44,5 +44,5 @@ export async function createVoiceRoom(teamId: string, userId: string, name?: str
 
 export function buildJoinWsUrl(roomId: string, userId: string) {
   const host = import.meta.env.VITE_WSPATH;
-  return `ws://${host}/voice/join/${roomId}?userId=${encodeURIComponent(userId)}`;
+  return `wss://${host}/voice/join/${roomId}?userId=${encodeURIComponent(userId)}`;
 }
