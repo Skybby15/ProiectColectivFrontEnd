@@ -3,42 +3,48 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { MockEventData } from "./EventPageComponents/EventType";
+import type { DtoEventDTO, DtoUpdateEventStatusRequest } from "@/api";
 import EventCard from "./EventPageComponents/EventCard";
-
-const MOCK_EVENTS: MockEventData[] = [
-  {
-    accepedCount: 5,
-    declinedCount: 2,
-    description: "Team building event at the park.",
-    duration: 120,
-    id: "event-1",
-    initatorId: "user-1",
-    name: "Team Building",
-    pendingCount: 3,
-    startsAt: "2025-12-15T10:00:00Z",
-    teamId: "team-1"
-  },
-
-  {
-    accepedCount: 8,
-    declinedCount: 1,
-    description: "Monthly project kickoff meeting.",
-    duration: 60,
-    id: "event-2",
-    initatorId: "user-2",
-    name: "Project Kickoff",
-    pendingCount: 1,
-    startsAt: "2024-07-20T09:00:00Z",
-    teamId: "team-1"
-  }
-];
+import { useEffect, useState } from "react";
+import { useGetEvents, useUpdateEventStatus } from "@/services/react-query/events";
+import { useAuthStore } from "@/services/stores/useAuthStore";
 
 export default function TeamEvents({teamId} : {teamId : string}) {
-  const isPending = false;
-  const isError = false;
-  const events = []; // Replace with actual data fetching logic
   const navigate = useNavigate();
+  const [ events, setEvents ] = useState<DtoEventDTO[]>([])
+
+  const { mutate: getEvents, data, isPending, isError, error } = useGetEvents(teamId)
+  const { mutateAsync: updateStatus, data: updatedEventStatusData } = useUpdateEventStatus();
+  const { user: loggedUser } = useAuthStore();
+  const userId = loggedUser?.id;
+
+  const handleAttendance = (status: string, id: string) => {
+    updateStatus({ id: id as string, request: { userId, status } as DtoUpdateEventStatusRequest });
+  }
+
+  const loadData = () => {
+    getEvents();
+  }
+
+  useEffect(() => {
+    loadData();
+  }, [teamId]);
+
+  useEffect(() => {
+    if(data) {
+      setEvents(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if(updatedEventStatusData) {
+      setEvents(prevEvents => 
+        prevEvents.map(event => 
+          event.id === updatedEventStatusData.id ? updatedEventStatusData : event
+        )
+      );
+    }
+  }, [updatedEventStatusData]);
 
   return (
     <div className="flex-1 p-6 space-y-6">
@@ -49,7 +55,7 @@ export default function TeamEvents({teamId} : {teamId : string}) {
             <Plus className="h-4 w-4 mr-2" />
             Create Event
           </Button>
-          <Button variant="outline" onClick={() => {}} disabled={isPending}>Refresh</Button>
+          <Button variant="outline" onClick={loadData} disabled={isPending}>Refresh</Button>
         </div>
       </div>
       {isPending && (
@@ -64,7 +70,7 @@ export default function TeamEvents({teamId} : {teamId : string}) {
         </div>
       )}
       {isError && (
-        <div className="text-red-500 text-sm">Failed to load events: error.message</div>
+        <div className="text-red-500 text-sm">Failed to load events: {error.message}</div>
       )}
       {!isPending && !isError && events.length === 0 && (
         <div className="text-muted-foreground">
@@ -72,8 +78,13 @@ export default function TeamEvents({teamId} : {teamId : string}) {
         </div>
       )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {MOCK_EVENTS.map((event) => (
-          <EventCard data={event} onAttend={() => {}} onReject={() => {}} />
+        {events.map((event) => (
+          <EventCard 
+            key={event.id}
+            data={event} 
+            onAttend={() => { handleAttendance("accepted", event.id!) }} 
+            onReject={() => { handleAttendance("declined", event.id!) }} 
+          />
         ))}
       </div>
     </div>

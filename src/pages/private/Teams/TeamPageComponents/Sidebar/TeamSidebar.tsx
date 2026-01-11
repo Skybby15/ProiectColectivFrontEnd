@@ -23,8 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  DialogClose,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/home.png"

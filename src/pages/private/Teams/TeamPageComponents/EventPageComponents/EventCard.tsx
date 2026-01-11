@@ -1,13 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, CheckCircle2, XCircle, Clock, Watch, Check, X } from "lucide-react";
-import type { MockEventData } from "./EventType";
+import type { DtoEventDTO } from "@/api";
 
-export default function EventCard({ data, onAttend, onReject }: { data: MockEventData, onAttend?: () => void, onReject?: () => void }) {
-  const totalInvited = data.accepedCount + data.declinedCount + data.pendingCount;
-  const acceptedPercent = (data.accepedCount / totalInvited) * 100;
-  const declinedPercent = (data.declinedCount / totalInvited) * 100;
-  const pendingPercent = (data.pendingCount / totalInvited) * 100;
+export default function EventCard({ data, onAttend, onReject }: { data: DtoEventDTO, onAttend?: () => void, onReject?: () => void }) {
+  const { acceptedCount = 0, declinedCount = 0, pendingCount = 0 } = data ?? {};
+  const totalInvited = acceptedCount + declinedCount + pendingCount;
+  const acceptedPercent = (acceptedCount / totalInvited) * 100;
+  const declinedPercent = (declinedCount / totalInvited) * 100;
+  const pendingPercent = (pendingCount / totalInvited) * 100;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -31,7 +32,8 @@ export default function EventCard({ data, onAttend, onReject }: { data: MockEven
   };
 
   // Calculate hours until event
-  const hoursUntil = Math.floor((new Date(data.startsAt).getTime() - Date.now()) / (1000 * 60 * 60));
+  const startsAt = (data?.startsAt ?? "")
+  const hoursUntil = Math.floor((new Date(startsAt).getTime() - Date.now()) / (1000 * 60 * 60));
 
   return (
     <Card className="p-6 border-2 border-solid max-h-128">
@@ -47,7 +49,7 @@ export default function EventCard({ data, onAttend, onReject }: { data: MockEven
       <div className="flex items-center gap-6 text-sm">
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-blue-500" />
-          <span>{formatDate(data.startsAt)} @ {formatTime(data.startsAt)}</span>
+          <span>{formatDate(startsAt)} @ {formatTime(startsAt)}</span>
         </div>
         <div className="flex items-center gap-2">
           <Watch className="h-4 w-4 text-amber-600"/>
@@ -80,7 +82,7 @@ export default function EventCard({ data, onAttend, onReject }: { data: MockEven
         <div className="grid grid-cols-3 border-2">
           <div className="flex items-center justify-center gap-2 p-3 border-r-2">
             <CheckCircle2 className="h-5 w-5 text-green-500" />
-            <span className="font-semibold">{data.accepedCount}</span>
+            <span className="font-semibold">{data.acceptedCount}</span>
           </div>
           <div className="flex items-center justify-center gap-2 p-3 border-r-2">
             <Clock className="h-5 w-5 text-gray-500" />

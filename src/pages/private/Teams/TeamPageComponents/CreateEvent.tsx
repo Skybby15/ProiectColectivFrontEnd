@@ -6,12 +6,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Controller, useForm } from "react-hook-form";
+import { useParams, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/logo-clean.png";
+import { useCreateEvent } from "@/services/react-query/events";
+import { useAuthStore } from "@/services/stores/useAuthStore";
 
 const formSchema = z.object({
   name: z.string()
@@ -32,6 +35,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateEvent() {
+  const { teamId } = useParams<{ teamId: string }>();
+  const navigate = useNavigate();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,10 +47,29 @@ export default function CreateEvent() {
     },
   });
 
+  const { mutateAsync: postEvent } = useCreateEvent();
+  const { user: loggedUser } = useAuthStore();
+
   const handleSubmit = async (values: FormValues) => {
-    console.log("Creating event:", values);
-    // TODO: Add when backend finished
-  };
+    try {
+      const initiatorId = loggedUser?.id;
+
+      await postEvent({
+        name: values.name,
+        description: values.description,
+        startsAt: values.startsAt.toISOString(),
+        duration: values.duration,
+        teamId: teamId,
+        initiatorId: initiatorId,
+      });
+
+      console.log("Event created successfully!");
+      form.reset();
+      navigate(`/teams/${teamId}`);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -173,7 +198,7 @@ export default function CreateEvent() {
                   type="button"
                   variant="outline"
                   className="flex-1"
-                  onClick={() => form.reset()}
+                  onClick={() => navigate(`/teams/${teamId}`)}
                 >
                   Cancel
                 </Button>
