@@ -70,13 +70,25 @@ export function AddFileDialog() {
 
     setLoading(true)
 
-    console.log(openTeam?.id!);
+    function arrayBufferToBase64(buffer: ArrayBuffer) {
+      let binary = '';
+      const bytes = new Uint8Array(buffer);
+      const chunkSize = 0x8000; // 32 KB chunks
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode(...chunk);
+      }
+      return btoa(binary);
+    }
 
     try {
+      const arrayBuffer = await file.arrayBuffer();
+      const base64 = arrayBufferToBase64(arrayBuffer);
+
       await addTeamFile({
         teamId: openTeam?.id!,
         request: {
-          content: await file.text(),
+          content: base64,
           contextId: openTeam?.id!,
           contextType: "team",
           extension: file.name.split(".").pop() || "",

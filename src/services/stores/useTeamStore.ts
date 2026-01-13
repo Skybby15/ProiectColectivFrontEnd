@@ -62,7 +62,9 @@ export const useTeamStore = create<TeamState>((set,get) => {
 
         clearOpenTeam: () => {
             set({
-                openTeam: undefined
+                openTeam: undefined,
+                teamMessages: [],
+                teamFiles: []
             })
         },
 
@@ -79,10 +81,11 @@ export const useTeamStore = create<TeamState>((set,get) => {
         },
 
         addTeamFilesMeta: (files) => {
-            const currentFiles = get().teamFiles;
-            set({
-                teamFiles: [...currentFiles, ...files]
-            })
+            set(state => {
+                const map = new Map(state.teamFiles.map(f => [f.id, f]));
+                files.forEach(f => map.set(f.id, f));
+                return { teamFiles: Array.from(map.values()) };
+            });
         },
 
         addTeamFile: (file) => {

@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoFileListResponse, DtoFileUploadRequest, DtoFileUploadResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, EntityTeam} from "@/api";
+import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoFileListResponse, DtoFileUploadRequest, DtoFileUploadResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, EntityFile, EntityTeam} from "@/api";
 import { api } from './api'
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";
 import { useAuthStore } from "../stores/useAuthStore";
@@ -167,3 +167,39 @@ export const useGetTeamFiles = () => {
         }
     }) 
 };
+
+export const useGetFile = () => {
+  return useMutation<EntityFile, Error, { teamId: string; fileId: string }>({
+    mutationFn: ({ teamId, fileId }) =>
+      api.teamsIdFilesFileIdGet(teamId, fileId).then(res => res.data),
+
+    onSuccess: (file) => {
+      if (!file.content || !file.name) return;
+
+      // 1️⃣ Decode Base64 content to bytes
+      const binaryString = atob(file.content); // Base64 -> binary string
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      // 2️⃣ Create Blob from bytes
+      const blob = new Blob([bytes], { type: file.type || "application/octet-stream" });
+
+      // 3️⃣ Create temporary URL and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+
+      // 4️⃣ Cleanup
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    },
+  });
+};
+
+
