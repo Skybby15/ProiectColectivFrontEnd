@@ -35,6 +35,7 @@ import {
   MessageCircle,
   MoreHorizontal,
   UserPlus,
+  Phone,
   Search,
 } from "lucide-react";
 
@@ -47,8 +48,12 @@ import {
 import type { EnrichedPending } from "@/services/react-query/friend";
 import type { DtoUserResponse } from "@/api";
 import { api as generatedApi } from "@/services/react-query/api";
+import { sendDirectMessageWithRetry } from '@/services/react-query/messages';
 import { useFriendStore } from "@/services/stores/useFriendStore";
 import { useAuthStore } from "@/services/stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { getJoinableRooms } from "@/services/react-query/voice";
+import { useVoiceStore } from '@/services/stores/useVoiceStore';
 
 type Friend = {
   id: string;
@@ -72,6 +77,7 @@ function mapUserToFriend(u: any): Friend {
 export default function Friends() {
   const friendsStore = useFriendStore();
   const auth = useAuthStore();
+  const navigate = useNavigate();
 
   const [pendingLoading, setPendingLoading] = useState(false);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
@@ -161,6 +167,71 @@ export default function Friends() {
     loadFriends();
   }, [loadFriends]);
 
+  // Poll for incoming private calls (rooms the user can join of type 'private')
+  const voice = useVoiceStore();
+  const [incomingInvite, setIncomingInvite] = useState<{ roomId: string; callerId: string; callerName: string } | null>(null);
+  const ignoredRoomsRef = useRef<Record<string, number>>({});
+  const declinedRoomsRef = useRef<Record<string, boolean>>({});
+  useEffect(() => {
+    if (!auth.user?.id) return;
+    // don't poll while user is already in a call
+    if (voice.selectedRoomId || voice.ws) return;
+    let mounted = true;
+    let poll: any = null;
+    const check = async () => {
+      try {
+        const rooms = await getJoinableRooms(String(auth.user!.id));
+        if (!mounted || !rooms) return;
+        const incoming = rooms.find((r: any) => r.type === 'private' && r.createdBy !== String(auth.user!.id));
+        if (incoming) {
+          const idStr = String(incoming.id);
+          // if we have locally marked this room as declined, skip showing it
+          if (declinedRoomsRef.current[idStr]) return;
+          // resolve caller name from server when possible
+          let callerName = incoming.createdBy || 'Unknown';
+          try {
+            const uresp = await generatedApi.usersIdGet(String(incoming.createdBy));
+            const udata = (uresp && (uresp as any).data) || null;
+            if (udata) {
+              const raw = udata.username || udata.name || `${udata.firstname || ''} ${udata.lastname || ''}`.trim() || udata;
+              try {
+                if (raw && typeof raw === 'string') callerName = raw;
+                else if (raw && typeof raw === 'object') callerName = raw.username || raw.name || `${raw.firstname || ''} ${raw.lastname || ''}`.trim() || String(incoming.createdBy);
+                else callerName = String(raw);
+              } catch {
+                callerName = String(incoming.createdBy);
+              }
+            }
+          } catch (e) {
+            // ignore
+          }
+          // set incoming invite state (UI will show accept/decline)
+          // ignore if user recently declined this room
+          const expires = ignoredRoomsRef.current[idStr];
+          if (expires && Date.now() < expires) return;
+          // avoid re-setting the same incoming invite if already visible
+          if (!incomingInvite || incomingInvite.roomId !== idStr) {
+            setIncomingInvite({ roomId: idStr, callerId: String(incoming.createdBy), callerName });
+          }
+          return;
+        }
+
+        // If no joinable room found, we could fallback to checking direct messages
+        // for explicit invites. That API currently requires strict query params
+        // and calling it without them returns 400 from the server, which causes
+        // noisy errors on page load. For now we skip that fallback to avoid the
+        // 400s; invitations should be delivered via the voice joinable API or
+        // via the real-time messages WebSocket.
+      } catch (e) {
+        // ignore polling errors
+      }
+    };
+    poll = window.setInterval(check, 3000);
+    // check immediately
+    check();
+    return () => { mounted = false; if (poll) clearInterval(poll); };
+  }, [auth.user?.id, navigate, voice.selectedRoomId, voice.ws]);
+
   async function handleRespond(fromId: string, toId: string, accept: boolean) {
     try {
       await respond.mutateAsync({ fromUserId: fromId, toUserId: toId, accept });
@@ -193,6 +264,63 @@ export default function Friends() {
   return (
     <div className="min-h-screen bg-neutral-900 text-gray-100">
       <Navbar />
+      {/* Incoming private call UI */}
+      {incomingInvite && (
+        <div className="fixed right-6 top-20 z-50">
+          <div className="border border-neutral-800 rounded-lg bg-neutral-800/95 p-4 shadow-lg">
+            <div className="mb-2 text-sm text-gray-200">{incomingInvite.callerName} is calling you</div>
+            <div className="flex gap-2">
+              <Button size="sm" className="bg-green-600 text-white" onClick={async () => {
+                // notify caller that we accepted, then join the private call page
+                try {
+                  try {
+                    await sendDirectMessageWithRetry(String(incomingInvite.callerId), String(auth.user!.id), `call_accepted:${incomingInvite.roomId}`);
+                  } catch (e) {
+                    console.warn('Failed to send call_accepted message after retries', e);
+                  }
+                } catch (e) {}
+                // pass caller id so PrivateCallPage can notify the peer when needed
+                navigate(`/private-call/${incomingInvite.roomId}?caller=${encodeURIComponent(String(incomingInvite.callerId))}`);
+                setIncomingInvite(null);
+              }}>Accept</Button>
+              <Button size="sm" variant="ghost" onClick={async () => {
+                try {
+                  // Try sending direct message (retry helper)
+                  try {
+                    const res = await sendDirectMessageWithRetry(String(incomingInvite.callerId), String(auth.user!.id), `call_declined:${incomingInvite.roomId}`);
+                    console.log('sendDirectMessageWithRetry call_declined result', res);
+                  } catch (e) {
+                    console.warn('Failed to send decline message after retries', e);
+                  }
+
+                  // (Direct API POST fallback removed — we already use sendDirectMessageWithRetry above)
+
+                  // As a fast fallback, if we have a voice WS connection, send a short room-level signal
+                  // so the caller (if connected to the voice room) receives immediate notification.
+                  try {
+                    const voice = useVoiceStore.getState();
+                    const ws = voice.ws;
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                      try {
+                        // send both a call-ended (existing handler) and a call_declined typed message
+                        ws.send(JSON.stringify({ type: 'call-ended', roomId: incomingInvite.roomId }));
+                        ws.send(JSON.stringify({ type: 'call_declined', roomId: incomingInvite.roomId, from: String(auth.user!.id), to: String(incomingInvite.callerId) }));
+                        console.log('Sent call-ended and call_declined via voice WS as fallback');
+                      } catch (e) { console.warn('voice ws send fallback failed', e); }
+                    }
+                  } catch (e) { /* ignore */ }
+
+                  // prevent showing this invite again for a short period and mark as declined locally
+                  const rid = String(incomingInvite.roomId);
+                  ignoredRoomsRef.current[rid] = Date.now() + 30_000;
+                  declinedRoomsRef.current[rid] = true;
+                } catch (e) { console.warn('decline handler error', e); }
+                setIncomingInvite(null);
+              }}>Decline</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="mx-auto max-w-5xl px-6 py-6">
         <div className="mb-6 flex items-start justify-between gap-4">
@@ -257,7 +385,7 @@ export default function Friends() {
                 </div>
               </div>
 
-              <div className="mt-3">
+              <div className="mt-3 max-h-80 overflow-y-auto">
                 {searchResults.length === 0 && (
                   <div className="flex flex-col items-center justify-center py-10 text-center">
                     <Search className="mb-4 h-10 w-10 text-gray-300" />
@@ -379,9 +507,34 @@ export default function Friends() {
               </div>
             )}
             {!friendsLoading &&
-              friends.map((friend) => (
-                <FriendRow key={friend.id} friend={friend} />
-              ))}
+                        friends.map((friend) => (
+                          <FriendRow key={friend.id} friend={friend} onCall={async () => {
+                            try {
+                              if (!auth.user?.id) {
+                                alert('You must be logged in to call');
+                                return;
+                              }
+                              const resp = await generatedApi.voicePrivateCallPost(String(auth.user.id), friend.id)
+                                .then(r => r.data);
+                              if (resp && resp.id) {
+                                // try to send invite message but don't let a transient 500 block the call
+                                try {
+                                  await sendDirectMessageWithRetry(String(friend.id), String(auth.user.id), `call_invite:${resp.id}`);
+                                } catch (e) {
+                                  // Log and continue: the message hub may be down; navigate to the call page anyway.
+                                  console.warn('Failed to send invite message; proceeding to call page', e);
+                                }
+
+                                navigate(`/private-call/${resp.id}?callee=${encodeURIComponent(String(friend.id))}`);
+                              } else {
+                                alert('Failed to start call');
+                              }
+                            } catch (e: any) {
+                              const msg = e?.response?.data?.message || e?.message || 'Call failed';
+                              alert(`Error: ${msg}`);
+                            }
+                          }} />
+                        ))}
           </TabsContent>
 
           <TabsContent value="pending" className="mt-4 space-y-3">
@@ -467,11 +620,12 @@ export default function Friends() {
           </TabsContent>
         </Tabs>
       </main>
+      
     </div>
   );
 }
 
-function FriendRow({ friend }: { friend: Friend }) {
+function FriendRow({ friend, onCall }: { friend: Friend; onCall: () => void }) {
   return (
     <Card className="border border-neutral-800 bg-neutral-800/90 shadow-sm">
       <CardContent className="flex items-center justify-between gap-4 px-4 py-3">
@@ -503,6 +657,16 @@ function FriendRow({ friend }: { friend: Friend }) {
           >
             <MessageCircle className="h-4 w-4" />
             <span>Message</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1 border-neutral-700 bg-neutral-900 text-gray-100 hover:bg-neutral-800"
+            onClick={onCall}
+          >
+            <Phone className="h-4 w-4" />
+            <span>Call</span>
           </Button>
 
           <DropdownMenu>

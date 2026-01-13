@@ -3,24 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
-import { type EntityTeam } from "@/api";
 import {useJoinTeam} from "@/services/react-query/teams.ts";
 import {useAuthStore} from "@/services/stores/useAuthStore.ts";
+import {useTeamStore} from "@/services/stores/useTeamStore.ts";
 
-interface SearchTeamFormProps {
-    allTeams: EntityTeam[];
-}
-
-export default function SearchTeamForm({ allTeams }: SearchTeamFormProps) {
+export default function SearchTeamForm() {
     const [teamName, setTeamName] = useState("");
     const { mutate: joinTeam, isPending } = useJoinTeam();
     const {user} = useAuthStore();
+    const {teams} = useTeamStore();
     const filteredTeams = useMemo(() => {
         if (!teamName.trim()) return [];
-        return allTeams.filter(team =>
+        return teams.filter(team =>
             team.name?.toLowerCase().includes(teamName.toLowerCase())
         );
-    }, [teamName, allTeams]);
+    }, [teamName, teams]);
 
     return (
         <form className="w-full text-white space-y-5">
@@ -57,6 +54,7 @@ export default function SearchTeamForm({ allTeams }: SearchTeamFormProps) {
                         <span>{team.name} </span>
 
                         <Button
+                            type = "button"
                             disabled={isPending}
                             size="sm"
                             className="bg-green-600 hover:bg-green-700 text-white"

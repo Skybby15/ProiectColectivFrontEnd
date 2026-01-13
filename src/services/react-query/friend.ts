@@ -12,21 +12,26 @@ const fetchPendingRequestsForUser = async (
   userId: string
 ): Promise<EnrichedPending[]> => {
   const resp = await generatedApi.friendRequestsUserIdGet(userId);
-  const data = (resp && (resp as any).data) || {};
+  // generatedApi may return either: { data: [...] } or directly an array, or an empty object.
+  // Normalize to `data` so downstream checks work and avoid noisy warnings when the
+  // backend returns an unexpected empty object.
+  const raw = resp ?? {};
+  const data = (raw as any).data !== undefined ? (raw as any).data : raw;
 
   let requests: DtoFriendRequestResponse[] = [];
 
   if (Array.isArray(data)) {
     // cazul în care backend-ul întoarce direct un array
     requests = data as DtoFriendRequestResponse[];
-  } else if (Array.isArray((data as any).requests)) {
+  } else if (data && Array.isArray((data as any).requests)) {
     // cazul vechi: { requests: [...] }
     requests = (data as any).requests;
-  } else if (Array.isArray((data as any).pendingRequests)) {
+  } else if (data && Array.isArray((data as any).pendingRequests)) {
     // dacă backend-ul a fost schimbat să trimită { pendingRequests: [...] }
     requests = (data as any).pendingRequests;
   } else {
-    console.warn("Unexpected pending response shape:", data);
+    // Don't spam the console with the full object; give a concise hint and return empty.
+    console.warn("Unexpected pending response shape; returning empty list.", Array.isArray(data) ? 'array' : typeof data);
     requests = [];
   }
 

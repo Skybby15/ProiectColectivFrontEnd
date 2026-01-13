@@ -9,6 +9,7 @@ import { TeamChatRoom } from "./TeamPageComponents/TeamChatRoom";
 import { Card } from "@/components/ui/card";
 import TeamQuizzes from "./TeamPageComponents/TeamQuizzes";
 import { TeamFiles } from "./TeamPageComponents/TeamFiles";
+import { TeamVoiceRoom } from "./TeamPageComponents/TeamVoiceRoom";
 
 export type Screen =
     "Dashboard" |
@@ -70,6 +71,8 @@ export default function TeamPage() {
                         }
                         {openScreen == "Files" &&
                             <TeamFiles teamId={teamId!}/>
+                        {openScreen == "VoiceRoom" &&
+                            <TeamVoiceRoom />
                         }
                     </div>
                 </div>

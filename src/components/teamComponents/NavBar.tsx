@@ -1,6 +1,11 @@
+"use client";
+
+import React, { Suspense, lazy } from 'react';
+// lazy-load notifier to avoid circular runtime deps
+const CallNotifier = lazy(() => import('./CallNotifier'));
 import { NavLink, useNavigate } from "react-router-dom";
 import { Users, Settings, UserPlus } from "lucide-react";
-import logo from '../../assets/logo-clean.png' 
+import logo from '../../assets/logo-clean.png'
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 export default function Navbar() {
@@ -50,6 +55,14 @@ export default function Navbar() {
                         </NavLink>
                     </MenubarMenu>
                 </Menubar>
+                                {/* Global call notifier (shows incoming private call on any page) */}
+                                <div>
+                                    {typeof window !== 'undefined' && (
+                                        <Suspense fallback={null}>
+                                            <CallNotifier />
+                                        </Suspense>
+                                    )}
+                                </div>
             </div>
         </div>
     );

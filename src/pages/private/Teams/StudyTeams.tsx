@@ -48,7 +48,7 @@ export default function StudyTeams() {
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
-                                <SearchTeamForm allTeams={teams} />
+                                <SearchTeamForm />
                             </DialogContent>
                         </Dialog>
 
