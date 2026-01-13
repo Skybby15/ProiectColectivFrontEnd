@@ -71,6 +71,7 @@ export default function TeamPage() {
                         }
                         {openScreen == "Files" &&
                             <TeamFiles teamId={teamId!}/>
+                        }
                         {openScreen == "VoiceRoom" &&
                             <TeamVoiceRoom />
                         }
