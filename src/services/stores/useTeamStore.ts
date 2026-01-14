@@ -1,5 +1,6 @@
 import type {DtoMessageDTO, EntityTeam} from '@/api/api';
 import { create } from 'zustand';
+import type { DtoTeamRequestItemDTO } from "@/api";
 
 interface TeamState {
     teams: EntityTeam[];
@@ -14,6 +15,12 @@ interface TeamState {
     clearOpenTeam: () => void;
     setTeamMessages: (messages: DtoMessageDTO[]) => void;
     addSentMessage: (message: DtoMessageDTO) => void;
+
+    teamRequests: DtoTeamRequestItemDTO[];
+    setTeamRequests: (reqs: DtoTeamRequestItemDTO[]) => void;
+    removeTeamRequest: (id: string) => void;
+    addTeamRequest: (req: DtoTeamRequestItemDTO) => void;
+
 }
 
 export const useTeamStore = create<TeamState>((set,get) => {
@@ -22,6 +29,7 @@ export const useTeamStore = create<TeamState>((set,get) => {
         teams: [],
         openTeam: undefined,
         teamMessages: [],
+        teamRequests: [],
 
         setTeams: (t) => {
             set({ teams: t });
@@ -68,6 +76,14 @@ export const useTeamStore = create<TeamState>((set,get) => {
             set(state => ({
                 teamMessages: [...state.teamMessages, message]
             }))
-        }
+        },
+
+        setTeamRequests: (reqs) => set({ teamRequests: reqs }),
+
+        removeTeamRequest: (id) =>
+            set({ teamRequests: get().teamRequests.filter(r => r.id !== id) }),
+
+        addTeamRequest: (req) =>
+            set({ teamRequests: [...get().teamRequests, req] }),
 
     }});
