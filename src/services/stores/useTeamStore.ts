@@ -21,6 +21,10 @@ interface TeamState {
     removeTeamRequest: (id: string) => void;
     addTeamRequest: (req: DtoTeamRequestItemDTO) => void;
 
+    requestedTeamIds: string[];
+    addRequestedTeamId: (teamId: string) => void;
+
+
 }
 
 export const useTeamStore = create<TeamState>((set,get) => {
@@ -30,6 +34,8 @@ export const useTeamStore = create<TeamState>((set,get) => {
         openTeam: undefined,
         teamMessages: [],
         teamRequests: [],
+
+        requestedTeamIds: [],
 
         setTeams: (t) => {
             set({ teams: t });
@@ -85,5 +91,13 @@ export const useTeamStore = create<TeamState>((set,get) => {
 
         addTeamRequest: (req) =>
             set({ teamRequests: [...get().teamRequests, req] }),
+
+
+        addRequestedTeamId: (teamId) => {
+            const current = get().requestedTeamIds;
+            if (current.includes(teamId)) return;
+            set({ requestedTeamIds: [...current, teamId] });
+        },
+
 
     }});
