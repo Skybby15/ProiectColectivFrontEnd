@@ -11,7 +11,7 @@ import { useGetTeamQuizzes } from "@/services/react-query/quiz";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function TeamDashboard({teamId} : {teamId : string}) {
-    const { openTeam, teamMessages } = useTeamStore();
+    const { openTeam, teamMessages, getTeamMemberWithId } = useTeamStore();
     const [activeSessions, setActiveSessions] = useState(0);
     const [filesCount, setFilesCount] = useState(0);
     const [recentFiles, setRecentFiles] = useState<DtoFileUploadResponse[]>([]);
@@ -206,7 +206,7 @@ export function TeamDashboard({teamId} : {teamId : string}) {
                                                 </Avatar>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium truncate">
-                                                        {`Member ${index + 1}`}
+                                                        {getTeamMemberWithId(userId)?.username || userId}
                                                     </p>
                                                 </div>
                                             </div>

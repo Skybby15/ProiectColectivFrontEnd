@@ -28,6 +28,7 @@ export default function TeamQuizzes({ teamId }: TeamQuizzesProps) {
             <Plus className="h-4 w-4 mr-2" />
             Create Quiz
           </Button>
+          <Button variant="outline" onClick={() => navigate(`/teams/${teamId}/quizzes/history`)}>History</Button>
           <Button variant="outline" onClick={() => getTeamQuizzes()} disabled={isPending}>Refresh</Button>
         </div>
       </div>

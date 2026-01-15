@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/home.png"
@@ -46,7 +46,8 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
   const [chatsAreOpen, setChatsAreOpen] = useState(false);
   const [voicesAreOpen, setVoicesAreOpen] = useState(false);
   const [topMenuOpen, setTopMenuOpen] = useState(false);
-  const { openTeam } = useTeamStore()
+  const { openTeam, clearOpenTeam } = useTeamStore()
+
   const { rooms, setRooms, selectRoom } = useVoiceStore();
   const { users, selectedRoomId } = useVoiceStore();
 
@@ -115,6 +116,11 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
 
   const navigate = useNavigate();
 
+  const handleGoHome = () => {
+    navigate("/home");
+    clearOpenTeam();
+  }
+
   return (
       <Sidebar variant="floating">
         <SidebarHeader>
@@ -136,19 +142,12 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
                     }
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="flex justify-center">
                   <DropdownMenuItem>
                     <Button
                         variant={"ghost"}
                     >
-                      Team setting 1
-                    </Button>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Button
-                        variant={"ghost"}
-                    >
-                      Team setting 2
+                      Leave team
                     </Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -280,22 +279,26 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
           </Collapsible>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
-                <div className="flex items-center gap-10">
-                  <FolderClosed/>
-                  Team Files
-                </div>
-              </SidebarGroupLabel>
+              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+                onClick={() => openScreenFn("Files")}
+              >
+                  <div className="flex items-center gap-10">
+                    <FolderClosed/>
+                    Team Files
+                  </div>
+                </SidebarGroupLabel>     
             </SidebarGroupContent>
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
-                <div className="flex items-center gap-10">
-                  <CalendarClock/>
-                  Events
-                </div>
-              </SidebarGroupLabel>
+              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+                onClick={() => openScreenFn("Events")}
+              >
+                  <div className="flex items-center gap-10">
+                    <CalendarClock/>
+                    Events
+                  </div>
+                </SidebarGroupLabel>     
             </SidebarGroupContent>
           </SidebarGroup>
           <SidebarGroup>
@@ -322,8 +325,8 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="border rounded-t-4xl hover:bg-accent cursor-pointer"
-                       onClick={() => navigate("/home")}
+        <SidebarFooter className="border-t rounded-t-4xl rounded-b-lg hover:bg-accent cursor-pointer overflow-hidden"
+          onClick={handleGoHome}
         >
           <div className=" flex items-center justify-center gap-x-2 pr-5">
             <img src={logo} alt="StudyFlow logo" className="h-7 w-auto" />

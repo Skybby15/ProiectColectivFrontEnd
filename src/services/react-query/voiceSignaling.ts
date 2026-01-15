@@ -200,14 +200,14 @@ export function createSignalingConnection(params: {
         console.log('[voiceSignaling] offer received from presenter:', from, 'sdp type:', msg.sdp?.type);
         try {
           // Create a new RTCPeerConnection to receive the screen share
-            const pc = new RTCPeerConnection({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' }
-                ],
-                iceCandidatePoolSize: 10
-            });
+          const pc = new RTCPeerConnection({ 
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:stun1.l.google.com:19302' },
+              { urls: 'stun:stun2.l.google.com:19302' }
+            ],
+            iceCandidatePoolSize: 10
+          });
           if (screenPcRef) screenPcRef.current = pc;
           
           pc.ontrack = (ev) => {

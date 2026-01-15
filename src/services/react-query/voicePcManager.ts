@@ -4,13 +4,13 @@ export function ensurePeerConnectionForReady(from: string, ctx: any) {
   const { pcRefs, pcOfferTimersRef, localStreamRef, audioElsRef, audioCtxRef, conn, addUser } = ctx;
   if (pcRefs[from]) return pcRefs[from];
 
-  const pc = new RTCPeerConnection({
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' }
-        ],
-        iceCandidatePoolSize: 10
+  const pc = new RTCPeerConnection({ 
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' }
+    ],
+    iceCandidatePoolSize: 10
   });
 
   // set a fallback timer: if the other side doesn't send SDP, create an offer after a short delay
@@ -130,13 +130,13 @@ export async function handleSdpMessage(from: string, sdp: any, ctx: any) {
       try { pcRefs[from].close(); } catch {}
       try { delete pcRefs[from]; } catch {}
     }
-    const pc = new RTCPeerConnection({
-          iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:stun1.l.google.com:19302' },
-              { urls: 'stun:stun2.l.google.com:19302' }
-          ],
-          iceCandidatePoolSize: 10
+    const pc = new RTCPeerConnection({ 
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' }
+      ],
+      iceCandidatePoolSize: 10
     });
     pcRefs[from] = pc;
     if (stream) try { stream.getTracks().forEach((t: MediaStreamTrack) => pc.addTrack(t, stream)); } catch {}
@@ -163,13 +163,13 @@ export async function handleSdpMessage(from: string, sdp: any, ctx: any) {
     try {
       try { pcRefs[from].close(); } catch {}
       try { delete pcRefs[from]; } catch {}
-      const newPc = new RTCPeerConnection({
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' }
-            ],
-            iceCandidatePoolSize: 10
+      const newPc = new RTCPeerConnection({ 
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' }
+        ],
+        iceCandidatePoolSize: 10
       });
       pcRefs[from] = newPc;
       if (stream) try { stream.getTracks().forEach((t: MediaStreamTrack) => newPc.addTrack(t, stream)); } catch {}

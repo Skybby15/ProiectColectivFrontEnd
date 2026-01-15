@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { DtoSolveQuizRequest, DtoSolveQuestionRequest, DtoSolveQuizResponse } from "@/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import QuizResults from "./QuizResults";
 
 interface ReadQuizQuestionResponse {
   quiz_question_id: string;
@@ -53,9 +54,12 @@ export default function SolveQuiz() {
   const handleOptionSelect = (option: string) => {
     if (!currentQuestion?.quiz_question_id) return;
     const qid = currentQuestion.quiz_question_id;
-    // Single selection - replace the answer array with just the selected option
-    setAnswers({ ...answers, [qid]: [option] });
-    console.log(`Selected option for ${qid}:`, [option]);
+    // Toggle selection for multi-select questions
+    const prev = answers[qid] || [];
+    const exists = prev.includes(option);
+    const next = exists ? prev.filter(a => a !== option) : [...prev, option];
+    setAnswers({ ...answers, [qid]: next });
+    console.log(`Toggled option for ${qid}:`, option, 'now:', next);
   };
 
   const handlePrev = () => {
@@ -91,6 +95,24 @@ export default function SolveQuiz() {
       console.log("Quiz result:", quizResult);
       setResult(quizResult);
       setShowResults(true);
+      // Persist attempt to local history (frontend-side) since backend doesn't currently store attempts
+      try {
+        const key = 'quiz_attempts_v1';
+        const stored = localStorage.getItem(key);
+        const list = stored ? JSON.parse(stored) as any[] : [];
+        const timestamp = new Date().toISOString();
+        const attemptsRecord = {
+          quizId: quizId,
+          teamId: teamId,
+          timestamp,
+          attempts,
+          result: quizResult
+        };
+        list.push(attemptsRecord);
+        localStorage.setItem(key, JSON.stringify(list));
+      } catch (e) {
+        console.warn('Failed to save quiz attempt to local storage', e);
+      }
     } catch (err) {
       toast.error("Failed to submit quiz");
       console.error("Submission error:", err);
@@ -119,86 +141,9 @@ export default function SolveQuiz() {
     );
   }
 
-  // Show results screen
+  // Show results screen using shared component
   if (showResults && result) {
-    const correctCount = result.questions_answers?.filter(q => q.is_correct).length || 0;
-    const totalQuestions = questions.length;
-    const percentage = Math.round((correctCount / totalQuestions) * 100);
-
-    return (
-      <div className="p-6 max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Quiz Results</h2>
-          <Button onClick={() => navigate(`/teams/${teamId}`)}>Back to Team</Button>
-        </div>
-
-        <Card className="p-6">
-          <div className="text-center space-y-2">
-            <h3 className="text-4xl font-bold">{percentage}%</h3>
-            <p className="text-lg text-muted-foreground">
-              {correctCount} out of {totalQuestions} correct
-            </p>
-            {percentage === 100 && <p className="text-green-500 font-semibold">Perfect Score! 🎉</p>}
-            {percentage >= 80 && percentage < 100 && <p className="text-blue-500 font-semibold">Great Job! 👏</p>}
-            {percentage >= 60 && percentage < 80 && <p className="text-yellow-500 font-semibold">Good Effort! 👍</p>}
-            {percentage < 60 && <p className="text-orange-500 font-semibold">Keep Practicing! 💪</p>}
-          </div>
-        </Card>
-
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold">Review Answers</h3>
-          {questions.map((q, idx) => {
-            const questionResult = result.questions_answers?.find(
-              r => r.quiz_question_id === q.quiz_question_id
-            );
-            const isCorrect = questionResult?.is_correct || false;
-            const correctAnswers = questionResult?.correct_fields || [];
-            const userAnswers = answers[q.quiz_question_id || ""] || [];
-
-            return (
-              <Card key={q.quiz_question_id} className="p-4">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <h4 className="font-medium">Question {idx + 1}: {q.question}</h4>
-                    {isCorrect ? (
-                      <span className="text-green-500 font-semibold">✓ Correct</span>
-                    ) : (
-                      <span className="text-red-500 font-semibold">✗ Incorrect</span>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    {q.quiz_options?.map((option: string) => {
-                      const isUserAnswer = userAnswers.includes(option);
-                      const isCorrectAnswer = correctAnswers.includes(option);
-                      return (
-                        <div
-                          key={option}
-                          className={`p-3 rounded-lg border-2 ${
-                            isCorrectAnswer
-                              ? "border-green-500 bg-green-50 dark:bg-green-950"
-                              : isUserAnswer
-                              ? "border-red-500 bg-red-50 dark:bg-red-950"
-                              : "border-border"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            {isCorrectAnswer && <span className="text-green-500">✓</span>}
-                            {isUserAnswer && !isCorrectAnswer && <span className="text-red-500">✗</span>}
-                            <span>{option}</span>
-                            {isCorrectAnswer && <span className="text-xs text-muted-foreground ml-auto">(Correct)</span>}
-                            {isUserAnswer && !isCorrectAnswer && <span className="text-xs text-muted-foreground ml-auto">(Your answer)</span>}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    );
+    return <QuizResults teamId={teamId} questions={questions as any} userAnswers={answers} result={result} />;
   }
 
   return (
