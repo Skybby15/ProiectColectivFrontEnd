@@ -1,10 +1,12 @@
 import type { DtoMessageDTO } from "@/api";
 import { useEffect } from "react";
 import { useTeamStore } from "../stores/useTeamStore";
+import { useAuthStore } from "../stores/useAuthStore";
 
 const WSPATH = import.meta.env.VITE_WSPATH;
 
 export function useMessageSocket(token : string, onTeam : boolean) {
+  const { user } = useAuthStore()
   const { openTeam ,addSentMessage } = useTeamStore()
 
   useEffect(() => {
@@ -15,11 +17,18 @@ export function useMessageSocket(token : string, onTeam : boolean) {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const messageDto = data.payload as DtoMessageDTO;
-      
-      if(messageDto.teamId == openTeam?.id && onTeam)
+
+      if(onTeam)
       {
+
+        if(messageDto.teamId != openTeam?.id)
+          return
+
+        if(messageDto.sender?.id == user?.id)
+          return
+
         addSentMessage(messageDto)
-      } 
+      }
 
     };
 

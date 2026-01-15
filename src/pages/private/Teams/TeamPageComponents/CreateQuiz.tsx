@@ -12,7 +12,7 @@ import { useAuthStore } from "@/services/stores/useAuthStore";
 interface QuestionForm {
   question: string;
   options: string[];
-  correctAnswerIndex: number;
+  correctAnswerIndexes: number[]; // support multiple correct answers
 }
 
 export default function CreateQuiz() {
@@ -21,7 +21,7 @@ export default function CreateQuiz() {
   const user = useAuthStore((state) => state.user);
   const [quizName, setQuizName] = useState("");
   const [questions, setQuestions] = useState<QuestionForm[]>([
-    { question: "", options: ["", ""], correctAnswerIndex: 0 }
+    { question: "", options: ["", ""], correctAnswerIndexes: [0] }
   ]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -30,7 +30,7 @@ export default function CreateQuiz() {
       toast.error("Maximum 20 questions allowed");
       return;
     }
-    setQuestions([...questions, { question: "", options: ["", ""], correctAnswerIndex: 0 }]);
+    setQuestions([...questions, { question: "", options: ["", ""], correctAnswerIndexes: [0] }]);
   };
 
   const removeQuestion = (index: number) => {
@@ -65,13 +65,17 @@ export default function CreateQuiz() {
     const updatedOptions = question.options.filter((_, i) => i !== optionIndex);
     updateQuestion(questionIndex, "options", updatedOptions);
 
-    if (question.correctAnswerIndex >= updatedOptions.length) {
-      updateQuestion(questionIndex, "correctAnswerIndex", updatedOptions.length - 1);
-    } else if (question.correctAnswerIndex === optionIndex) {
-      updateQuestion(questionIndex, "correctAnswerIndex", 0);
-    } else if (question.correctAnswerIndex > optionIndex) {
-      updateQuestion(questionIndex, "correctAnswerIndex", question.correctAnswerIndex - 1);
+    // adjust correctAnswerIndexes: remove any that pointed to removed option,
+    // and shift indexes greater than removed one
+    const prevCorrect = question.correctAnswerIndexes || [];
+    const nextCorrect = prevCorrect
+      .map(i => (i > optionIndex ? i - 1 : i))
+      .filter(i => i >= 0 && i < updatedOptions.length);
+    if (nextCorrect.length === 0) {
+      // ensure at least one correct answer remains
+      nextCorrect.push(0);
     }
+    updateQuestion(questionIndex, "correctAnswerIndexes", nextCorrect);
   };
 
   const updateOption = (questionIndex: number, optionIndex: number, value: string) => {
@@ -104,11 +108,15 @@ export default function CreateQuiz() {
         return false;
       }
 
-      const filledOptions = q.options.filter(opt => opt.trim());
-      if (filledOptions.length !== q.options.length) {
-        toast.error(`Question ${i + 1} has empty options`);
-        return false;
-      }
+        const filledOptions = q.options.filter(opt => opt.trim());
+        if (filledOptions.length !== q.options.length) {
+          toast.error(`Question ${i + 1} has empty options`);
+          return false;
+        }
+        if (!q.correctAnswerIndexes || q.correctAnswerIndexes.length === 0) {
+          toast.error(`Question ${i + 1} must have at least one correct answer`);
+          return false;
+        }
     }
 
     return true;
@@ -127,7 +135,7 @@ export default function CreateQuiz() {
       const entityQuestions: EntityQuestion[] = questions.map(q => ({
         question: q.question,
         options: q.options,
-        answers: [q.options[q.correctAnswerIndex]],
+        answers: (q.correctAnswerIndexes || []).map(i => q.options[i]),
         type: "multiple_choice" as const
       }));
 
@@ -212,10 +220,15 @@ export default function CreateQuiz() {
                 {question.options.map((option, oIndex) => (
                   <div key={oIndex} className="flex items-center gap-2">
                     <input
-                      type="radio"
-                      name={`correct-${qIndex}`}
-                      checked={question.correctAnswerIndex === oIndex}
-                      onChange={() => updateQuestion(qIndex, "correctAnswerIndex", oIndex)}
+                      type="checkbox"
+                      name={`correct-${qIndex}-${oIndex}`}
+                      checked={(question.correctAnswerIndexes || []).includes(oIndex)}
+                      onChange={() => {
+                        const prev = question.correctAnswerIndexes || [];
+                        const exists = prev.includes(oIndex);
+                        const next = exists ? prev.filter(i => i !== oIndex) : [...prev, oIndex];
+                        updateQuestion(qIndex, "correctAnswerIndexes", next);
+                      }}
                       className="h-4 w-4"
                     />
                     <Input
@@ -234,7 +247,7 @@ export default function CreateQuiz() {
                     </Button>
                   </div>
                 ))}
-                <p className="text-xs text-muted-foreground">Select the radio button for the correct answer</p>
+                <p className="text-xs text-muted-foreground">Select one or more correct answers</p>
               </div>
             </Card>
           ))}

@@ -23,8 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  DialogClose,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/home.png"
@@ -47,7 +46,8 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
   const [chatsAreOpen, setChatsAreOpen] = useState(false);
   const [voicesAreOpen, setVoicesAreOpen] = useState(false);
   const [topMenuOpen, setTopMenuOpen] = useState(false);
-  const { openTeam } = useTeamStore()
+  const { openTeam, clearOpenTeam } = useTeamStore()
+
   const { rooms, setRooms, selectRoom } = useVoiceStore();
   const { users, selectedRoomId } = useVoiceStore();
 
@@ -61,8 +61,8 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
     if (!openTeam?.id) { setRooms([]); return; }
     let cancelled = false;
     getActiveRooms(String(openTeam.id))
-      .then((data) => { if (!cancelled) setRooms(data); })
-      .catch(() => { if (!cancelled) setRooms([]); });
+        .then((data) => { if (!cancelled) setRooms(data); })
+        .catch(() => { if (!cancelled) setRooms([]); });
     return () => { cancelled = true; };
   }, [voicesAreOpen, openTeam?.id]);
 
@@ -116,12 +116,17 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
 
   const navigate = useNavigate();
 
+  const handleGoHome = () => {
+    navigate("/home");
+    clearOpenTeam();
+  }
+
   return (
-    <Sidebar variant="floating">
+      <Sidebar variant="floating">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem
-              className="cursor-pointer"
+                className="cursor-pointer"
             >
               <DropdownMenu onOpenChange={(open) => setTopMenuOpen(open)} >
                 <DropdownMenuTrigger asChild>
@@ -130,50 +135,43 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
                       {openTeam?.name}
                     </p>
                     { topMenuOpen &&
-                      <X size={20}/>
+                        <X size={20}/>
                     }
                     { !topMenuOpen &&
-                      <ChevronDown size={20}/>
+                        <ChevronDown size={20}/>
                     }
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="flex justify-center">
                   <DropdownMenuItem>
                     <Button
-                      variant={"ghost"}
+                        variant={"ghost"}
                     >
-                      Team setting 1
-                    </Button>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Button
-                      variant={"ghost"}
-                    >
-                      Team setting 2
+                      Leave team
                     </Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
-        
+
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
-                onClick={() => openScreenFn("Dashboard")}
+                                 onClick={() => openScreenFn("Dashboard")}
               >
-                  <div className="flex items-center gap-8 text-xl">
-                    <LayoutDashboard/>
-                    Dashboard
-                  </div>
-                </SidebarGroupLabel>     
+                <div className="flex items-center gap-8 text-xl">
+                  <LayoutDashboard/>
+                  Dashboard
+                </div>
+              </SidebarGroupLabel>
             </SidebarGroupContent>
           </SidebarGroup>
           <Collapsible
-            open={chatsAreOpen}
-            onOpenChange={setChatsAreOpen}
+              open={chatsAreOpen}
+              onOpenChange={setChatsAreOpen}
           >
             <SidebarGroup>
               <CollapsibleTrigger>
@@ -182,38 +180,38 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
                     <MessageSquareText size={22}/>
                     Chat Rooms
                   </div>
-                  { chatsAreOpen && 
-                    <ChevronUp/>
+                  { chatsAreOpen &&
+                      <ChevronUp/>
                   }
                   {
-                    !chatsAreOpen &&
-                    <ChevronDown/>
+                      !chatsAreOpen &&
+                      <ChevronDown/>
                   }
                 </SidebarGroupLabel>
               </CollapsibleTrigger>
               <CollapsibleContent>
-              <SidebarGroupContent>
+                <SidebarGroupContent>
                   <SidebarMenuSub className="gap-y-2">
-                  {chatRooms.map((item) => (    // Momentan orice chat room duce la general 
-                      <SidebarMenuItem className="cursor-pointer" 
-                        key={item.title}
-                        onClick={() => openScreenFn("ChatRoom",0)}
-                      >
-                      <SidebarMenuButton asChild>
-                        <div>
-                          {item.title}
-                        </div>
-                      </SidebarMenuButton>
-                      </SidebarMenuItem>
-                  ))}
+                    {chatRooms.map((item) => (    // Momentan orice chat room duce la general
+                        <SidebarMenuItem className="cursor-pointer"
+                                         key={item.title}
+                                         onClick={() => openScreenFn("ChatRoom",0)}
+                        >
+                          <SidebarMenuButton asChild>
+                            <div>
+                              {item.title}
+                            </div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
                   </SidebarMenuSub>
-              </SidebarGroupContent>
+                </SidebarGroupContent>
               </CollapsibleContent>
             </SidebarGroup>
           </Collapsible>
           <Collapsible
-            open={voicesAreOpen}
-            onOpenChange={setVoicesAreOpen}
+              open={voicesAreOpen}
+              onOpenChange={setVoicesAreOpen}
           >
             <SidebarGroup>
               <CollapsibleTrigger>
@@ -222,66 +220,68 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
                     <AudioLines/>
                     Voice Rooms
                   </div>
-                  { voicesAreOpen && 
-                    <ChevronUp/>
+                  { voicesAreOpen &&
+                      <ChevronUp/>
                   }
                   {
-                    !voicesAreOpen &&
-                    <ChevronDown/>
+                      !voicesAreOpen &&
+                      <ChevronDown/>
                   }
                 </SidebarGroupLabel>
               </CollapsibleTrigger>
               <CollapsibleContent>
-              <SidebarGroupContent>
-                <div className="px-3 py-2">
-                  <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="ghost">Create Room</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Create Voice Room</DialogTitle>
-                        <DialogDescription>Give a name to the voice room (optional).</DialogDescription>
-                      </DialogHeader>
-                      <div className="pt-2">
-                        <Input value={roomName} onChange={(e) => setRoomName(e.target.value)} placeholder="Room name" />
-                      </div>
-                      <DialogFooter>
-                        <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={handleCreateRoom} disabled={isCreating}>{isCreating ? "Creating..." : "Create"}</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                  <SidebarMenuSub className="gap-y-3">
-                  {rooms.map((room) => (
-                    <SidebarMenuItem
-                      className="cursor-pointer"
-                      key={room.id}
-                      onClick={() => {
-                          selectRoom(String(room.id));
-                          openScreenFn("VoiceRoom");
-                        }}
-                    >
-                      <SidebarMenuButton asChild>
-                        <div className="justify-between">
-                          <p className="line-clamp-1">{room.name}</p>
-                          <div className="flex items-center gap-1">
-                            {String(room.id) === String(selectedRoomId) ? (users ? users.length : room.userCount) : room.userCount}
-                            <UsersRound size={20}/>
-                          </div>
+                <SidebarGroupContent>
+                  <div className="px-3 py-2">
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" variant="ghost">Create Room</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Create Voice Room</DialogTitle>
+                          <DialogDescription>Give a name to the voice room (optional).</DialogDescription>
+                        </DialogHeader>
+                        <div className="pt-2">
+                          <Input value={roomName} onChange={(e) => setRoomName(e.target.value)} placeholder="Room name" />
                         </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                        <DialogFooter>
+                          <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                          <Button onClick={handleCreateRoom} disabled={isCreating}>{isCreating ? "Creating..." : "Create"}</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <SidebarMenuSub className="gap-y-3">
+                    {rooms.map((room) => (
+                        <SidebarMenuItem
+                            className="cursor-pointer"
+                            key={room.id}
+                            onClick={() => {
+                              selectRoom(String(room.id));
+                              openScreenFn("VoiceRoom");
+                            }}
+                        >
+                          <SidebarMenuButton asChild>
+                            <div className="justify-between">
+                              <p className="line-clamp-1">{room.name}</p>
+                              <div className="flex items-center gap-1">
+                                {String(room.id) === String(selectedRoomId) ? (users ? users.length : room.userCount) : room.userCount}
+                                <UsersRound size={20}/>
+                              </div>
+                            </div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
                   </SidebarMenuSub>
-              </SidebarGroupContent>
+                </SidebarGroupContent>
               </CollapsibleContent>
             </SidebarGroup>
           </Collapsible>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
+              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+                onClick={() => openScreenFn("Files")}
+              >
                   <div className="flex items-center gap-10">
                     <FolderClosed/>
                     Team Files
@@ -291,7 +291,9 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
+              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+                onClick={() => openScreenFn("Events")}
+              >
                   <div className="flex items-center gap-10">
                     <CalendarClock/>
                     Events
@@ -302,35 +304,35 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
-                  <div className="flex items-center gap-10">
-                    <CalendarDays/>
-                    Calendar
-                  </div>
-                </SidebarGroupLabel>     
+                <div className="flex items-center gap-10">
+                  <CalendarDays/>
+                  Calendar
+                </div>
+              </SidebarGroupLabel>
             </SidebarGroupContent>
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel 
-                onClick={() => openScreenFn("Quizzes")}
-                className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+              <SidebarGroupLabel
+                  onClick={() => openScreenFn("Quizzes")}
+                  className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
               >
-                  <div className="flex items-center gap-10">
-                    <BookOpenText/>
-                    Quizzes
-                  </div>
-                </SidebarGroupLabel>     
+                <div className="flex items-center gap-10">
+                  <BookOpenText/>
+                  Quizzes
+                </div>
+              </SidebarGroupLabel>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="border rounded-t-4xl hover:bg-accent cursor-pointer"
-          onClick={() => navigate("/home")}
+        <SidebarFooter className="border-t rounded-t-4xl rounded-b-lg hover:bg-accent cursor-pointer overflow-hidden"
+          onClick={handleGoHome}
         >
           <div className=" flex items-center justify-center gap-x-2 pr-5">
             <img src={logo} alt="StudyFlow logo" className="h-7 w-auto" />
             <p>Home</p>
           </div>
         </SidebarFooter>
-    </Sidebar>
+      </Sidebar>
   );
 }
