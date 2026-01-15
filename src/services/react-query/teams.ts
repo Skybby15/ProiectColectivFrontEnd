@@ -1,4 +1,4 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoFileListResponse, DtoFileUploadRequest, DtoFileUploadResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, DtoUserResponse, EntityFile, EntityTeam} from "@/api";
 import { api } from './api'
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";

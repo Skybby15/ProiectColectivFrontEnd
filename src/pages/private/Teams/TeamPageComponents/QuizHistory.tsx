@@ -20,8 +20,8 @@ export default function QuizHistory() {
   const navigate = useNavigate();
   const [history, setHistory] = useState<StoredAttempt[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [loadingQuizId, setLoadingQuizId] = useState<string | null>(null);
-  const [fetchedQuizQuestions, setFetchedQuizQuestions] = useState<any[] | null>(null);
+  const [loadingQuizId, _] = useState<string | null>(null);
+  const [fetchedQuizQuestions, __] = useState<any[] | null>(null);
 
   useEffect(() => {
     try {

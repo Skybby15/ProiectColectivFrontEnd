@@ -61,7 +61,7 @@ export function AddFileDialog() {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const { mutateAsync: addTeamFile, error } = useAddTeamFile();
+  const { mutateAsync: addTeamFile } = useAddTeamFile();
   const { openTeam } = useTeamStore();
   const { user } = useAuthStore();
 

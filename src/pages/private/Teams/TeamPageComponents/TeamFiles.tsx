@@ -9,6 +9,7 @@ import { useGetTeamFiles, useGetFile } from "@/services/react-query/teams";
 import { Spinner } from "@/components/ui/spinner";
 
 export function TeamFiles({ teamId }: { teamId: string }) {
+    console.log(teamId)
     const { teamFiles,openTeam, getTeamMemberWithId } = useTeamStore();
     const { mutateAsync: getTeamFiles } = useGetTeamFiles();
     const { mutate: getFile } = useGetFile();
