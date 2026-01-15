@@ -23,8 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  DialogClose,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/home.png"
@@ -291,12 +290,14 @@ export function TeamSidebar({ openScreenFn }: TeamSidebarProps) {
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer">
-                <div className="flex items-center gap-10">
-                  <CalendarClock/>
-                  Events
-                </div>
-              </SidebarGroupLabel>
+              <SidebarGroupLabel className="font-bold text-sm h-10 hover:text-primary hover:bg-accent cursor-pointer"
+                onClick={() => openScreenFn("Events")}
+              >
+                  <div className="flex items-center gap-10">
+                    <CalendarClock/>
+                    Events
+                  </div>
+                </SidebarGroupLabel>     
             </SidebarGroupContent>
           </SidebarGroup>
           <SidebarGroup>

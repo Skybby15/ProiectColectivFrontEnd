@@ -12,6 +12,7 @@ interface TeamState {
 
     setOpenTeam: (teamId : string) => void;
     clearOpenTeam: () => void;
+
     setTeamMessages: (messages: DtoMessageDTO[]) => void;
     addSentMessage: (message: DtoMessageDTO) => void;
 }
