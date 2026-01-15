@@ -1,4 +1,4 @@
-import type {DtoFileUploadResponse, DtoMessageDTO, EntityTeam} from '@/api/api';
+import type {DtoFileUploadResponse, DtoMessageDTO, DtoUserResponse, EntityTeam} from '@/api/api';
 import { create } from 'zustand';
 import type { DtoTeamRequestItemDTO } from "@/api";
 
@@ -7,6 +7,8 @@ interface TeamState {
     openTeam: EntityTeam | undefined;
     teamMessages: DtoMessageDTO[];
     teamFiles: DtoFileUploadResponse[];
+    teamMembers: DtoUserResponse[];
+    getTeamMemberWithId: (id: string) => DtoUserResponse | undefined;
 
 
     setTeams: (teams: EntityTeam[]) => void;
@@ -15,6 +17,8 @@ interface TeamState {
 
     setOpenTeam: (teamId : string) => void;
     clearOpenTeam: () => void;
+
+    setTeamMembers: (members: DtoUserResponse[]) => void;
 
     setTeamMessages: (messages: DtoMessageDTO[]) => void;
     addSentMessage: (message: DtoMessageDTO) => void;
@@ -37,6 +41,11 @@ export const useTeamStore = create<TeamState>((set,get) => {
         teamMessages: [],
         teamRequests: [],
         teamFiles: [],
+        teamMembers: [],
+        getTeamMemberWithId: (id: string) => {
+            const members = get().teamMembers;
+            return members.find((member) => member.id === id);
+        },
 
         setTeams: (t) => {
             set({ teams: t });
@@ -71,8 +80,13 @@ export const useTeamStore = create<TeamState>((set,get) => {
             set({
                 openTeam: undefined,
                 teamMessages: [],
-                teamFiles: []
+                teamFiles: [],
+                teamMembers: []
             })
+        },
+
+        setTeamMembers: (members) => {
+            set({ teamMembers: members });
         },
 
         setTeamMessages: (messages) => {

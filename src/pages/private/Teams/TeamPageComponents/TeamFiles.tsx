@@ -9,7 +9,7 @@ import { useGetTeamFiles, useGetFile } from "@/services/react-query/teams";
 import { Spinner } from "@/components/ui/spinner";
 
 export function TeamFiles({ teamId }: { teamId: string }) {
-    const { teamFiles,openTeam } = useTeamStore();
+    const { teamFiles,openTeam, getTeamMemberWithId } = useTeamStore();
     const { mutateAsync: getTeamFiles } = useGetTeamFiles();
     const { mutate: getFile } = useGetFile();
 
@@ -107,7 +107,7 @@ export function TeamFiles({ teamId }: { teamId: string }) {
                 <CardContent className="flex flex-row justify-between">
                 <div className="flex flex-col">
                     <p className="text-sm text-gray-500">{formatFileSize(file.size!)}</p>
-                    {/* <p className="text-sm text-gray-500">Uploaded by: {file.ownerId}</p> */}
+                    <p className="text-sm text-gray-500">Uploaded by: {getTeamMemberWithId(file.ownerId!)?.username}</p>
                     <p className="text-sm text-gray-500">Upload date: {formatDate(file.createdAt!)}</p>
                     
                 </div>
