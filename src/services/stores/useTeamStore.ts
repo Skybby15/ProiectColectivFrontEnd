@@ -1,10 +1,12 @@
-import type {DtoMessageDTO, EntityTeam} from '@/api/api';
+import type {DtoFileUploadResponse, DtoMessageDTO, EntityTeam} from '@/api/api';
 import { create } from 'zustand';
 
 interface TeamState {
     teams: EntityTeam[];
     openTeam: EntityTeam | undefined;
     teamMessages: DtoMessageDTO[];
+    teamFiles: DtoFileUploadResponse[];
+
 
     setTeams: (teams: EntityTeam[]) => void;
     addTeam: (team: EntityTeam) => void;
@@ -15,6 +17,11 @@ interface TeamState {
 
     setTeamMessages: (messages: DtoMessageDTO[]) => void;
     addSentMessage: (message: DtoMessageDTO) => void;
+
+    addTeamFilesMeta: (files: DtoFileUploadResponse[]) => void;
+    addTeamFile: (file: DtoFileUploadResponse) => void;
+    removeTeamFile: (fileId: string) => void;
+
 }
 
 export const useTeamStore = create<TeamState>((set,get) => {
@@ -23,6 +30,7 @@ export const useTeamStore = create<TeamState>((set,get) => {
         teams: [],
         openTeam: undefined,
         teamMessages: [],
+        teamFiles: [],
 
         setTeams: (t) => {
             set({ teams: t });
@@ -55,7 +63,9 @@ export const useTeamStore = create<TeamState>((set,get) => {
 
         clearOpenTeam: () => {
             set({
-                openTeam: undefined
+                openTeam: undefined,
+                teamMessages: [],
+                teamFiles: []
             })
         },
 
@@ -69,6 +79,27 @@ export const useTeamStore = create<TeamState>((set,get) => {
             set(state => ({
                 teamMessages: [...state.teamMessages, message]
             }))
+        },
+
+        addTeamFilesMeta: (files) => {
+            set(state => {
+                const map = new Map(state.teamFiles.map(f => [f.id, f]));
+                files.forEach(f => map.set(f.id, f));
+                return { teamFiles: Array.from(map.values()) };
+            });
+        },
+
+        addTeamFile: (file) => {
+            set(state => ({
+                teamFiles: [...state.teamFiles, file]
+            }))
+        },
+
+        removeTeamFile: (fileId) => {
+            const currentFiles = get().teamFiles;
+            set({
+                teamFiles: currentFiles.filter(f => f.id !== fileId)
+            })
         }
 
     }});
