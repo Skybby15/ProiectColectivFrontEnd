@@ -11,6 +11,7 @@ import { useGetTeamMessages, useSendTeamMessage } from "@/services/react-query/t
 import type { DtoTeamMessageRequest } from "@/api"
 import { useMessageSocket } from "@/services/websockets/messagesWS"
 import { Spinner } from "@/components/ui/spinner"
+import { useGetAllTeamRequests, useAcceptTeamRequest, useRejectTeamRequest } from "@/services/react-query/teamsRequests";
 
 export function TeamChatRoom({ roomId }: { roomId: number }) {
   const [loading, setLoading] = useState(true);
@@ -23,19 +24,24 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   const { user, token } = useAuthStore();
-  const { openTeam, teamMessages } = useTeamStore();
+  const { openTeam, teamMessages, teamRequests} = useTeamStore();
 
   const { mutateAsync : getTeamMessagesAsync } = useGetTeamMessages();
   const { mutateAsync : sendTeamMessagesAsync} = useSendTeamMessage();
+  const { mutateAsync: getAllTeamRequestsAsync } = useGetAllTeamRequests();
+  const { mutate: acceptReq } = useAcceptTeamRequest();
+  const { mutate: rejectReq } = useRejectTeamRequest();
 
   useMessageSocket(token!,true);
 
   useEffect(() => {
-    getTeamMessagesAsync({teamId: openTeam?.id!}).then(() => {
-      setLoading(false)
-      setNewMessagesCount(0)
-    })
-  },[])
+    getTeamMessagesAsync({ teamId: openTeam?.id! })
+        .then(() => getAllTeamRequestsAsync())
+        .then(() => {
+          setLoading(false);
+          setNewMessagesCount(0);
+        });
+  }, []);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return
@@ -135,6 +141,8 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
     }
   },[isAtBottom])
 
+  const visibleRequests = teamRequests?.filter(r => r.teamId === openTeam?.id) ?? [];
+
   return (
     <div className="w-full h-full flex items-center justify-center">
       <Card className="flex flex-col w-full h-full mx-2 rounded-r-3xl rounded-l-none overflow-hidden">
@@ -156,27 +164,61 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
             className="relative p-4 h-[70vh]" 
           >
             <div className="space-y-4">
-              {teamMessages.map((message,index) => (
-                <div key={index} className="flex gap-3">
-                  <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarFallback className="text-xs">
-                      {message.sender?.username?.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-semibold text-sm">{message.sender?.username}</span>
-                      <span className="text-xs text-muted-foreground">{message.sentAt}</span>
+              {/* messages */}
+              {teamMessages.map((message, index) => (
+                  <div key={index} className="flex gap-3">
+                    <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarFallback className="text-xs">
+                        {message.sender?.username?.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-semibold text-sm">{message.sender?.username}</span>
+                        <span className="text-xs text-muted-foreground">{message.sentAt}</span>
+                      </div>
+                      <p className="text-sm text-foreground min-w-0 word wrap-anywhere overflow-wrap anywhere">
+                        {message.textContent}
+                      </p>
                     </div>
-                    <p className="text-sm text-foreground min-w-0 word wrap-anywhere overflow-wrap anywhere">
-                      {message.textContent}
-                    </p>
                   </div>
-                </div>
               ))}
+              {/* team requests messages” */}
+              {visibleRequests.map((req) => (
+                  <div key={req.id} className="rounded-md border p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">Join request</p>
+                        <p className="text-sm text-muted-foreground">
+                          User <span className="font-medium">{req.userId}</span> wants to join this team
+                        </p>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => acceptReq({ id: req.id! })}
+                        >
+                          Accept
+                        </Button>
+
+                        <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => rejectReq({ id: req.id! })}
+                        >
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+              ))}
+
               <div ref={messagesEndRef} />
             </div>
-            
+
+
             { newMessagesCount != 0 && !isAtBottom &&
               <Button variant={"outline"} 
                 onClick={handlePressOnNewMessages}

@@ -3,21 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
-import {useJoinTeam} from "@/services/react-query/teams.ts";
 import {useAuthStore} from "@/services/stores/useAuthStore.ts";
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";
+import { useCreateTeamRequest } from "@/services/react-query/teamsRequests";
+
 
 export default function SearchTeamForm() {
     const [teamName, setTeamName] = useState("");
-    const { mutate: joinTeam, isPending } = useJoinTeam();
+    const {mutate: createTeamRequest, isPending} = useCreateTeamRequest();
     const {user} = useAuthStore();
     const {teams} = useTeamStore();
     const filteredTeams = useMemo(() => {
         if (!teamName.trim()) return [];
+
         return teams.filter(team =>
-            team.name?.toLowerCase().includes(teamName.toLowerCase())
+            team.name?.toLowerCase().includes(teamName.toLowerCase()) &&
+            !team.users?.includes(user?.id ?? "")
         );
-    }, [teamName, teams]);
+    }, [teamName, teams, user?.id]);
+
 
     return (
         <form className="w-full text-white space-y-5">
@@ -62,13 +66,13 @@ export default function SearchTeamForm() {
                                 console.log("Clicked team:", team.id, "user:", user?.id);
                                 if (!team.id || !user?.id) return;
 
-                                joinTeam({
-                                    teamId: team.id,
-                                    userId: user.id
+                                createTeamRequest({
+                                    teamId: team.id!,
+                                    userId: user.id!
                                 });
                             }}
                         >
-                            {isPending ? "Joining..." : "Join"}
+                            {isPending ? "Sending Request..." : "Request Join"}
                         </Button>
 
                     </div>

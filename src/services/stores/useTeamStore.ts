@@ -1,5 +1,6 @@
 import type {DtoFileUploadResponse, DtoMessageDTO, EntityTeam} from '@/api/api';
 import { create } from 'zustand';
+import type { DtoTeamRequestItemDTO } from "@/api";
 
 interface TeamState {
     teams: EntityTeam[];
@@ -18,6 +19,10 @@ interface TeamState {
     setTeamMessages: (messages: DtoMessageDTO[]) => void;
     addSentMessage: (message: DtoMessageDTO) => void;
 
+    teamRequests: DtoTeamRequestItemDTO[];
+    setTeamRequests: (reqs: DtoTeamRequestItemDTO[]) => void;
+    removeTeamRequest: (id: string) => void;
+    addTeamRequest: (req: DtoTeamRequestItemDTO) => void;
     addTeamFilesMeta: (files: DtoFileUploadResponse[]) => void;
     addTeamFile: (file: DtoFileUploadResponse) => void;
     removeTeamFile: (fileId: string) => void;
@@ -30,6 +35,7 @@ export const useTeamStore = create<TeamState>((set,get) => {
         teams: [],
         openTeam: undefined,
         teamMessages: [],
+        teamRequests: [],
         teamFiles: [],
 
         setTeams: (t) => {
@@ -81,6 +87,13 @@ export const useTeamStore = create<TeamState>((set,get) => {
             }))
         },
 
+        setTeamRequests: (reqs) => set({ teamRequests: reqs }),
+
+        removeTeamRequest: (id) =>
+            set({ teamRequests: get().teamRequests.filter(r => r.id !== id) }),
+
+        addTeamRequest: (req) =>
+            set({ teamRequests: [...get().teamRequests, req] }),
         addTeamFilesMeta: (files) => {
             set(state => {
                 const map = new Map(state.teamFiles.map(f => [f.id, f]));
