@@ -8,8 +8,10 @@ docs/ControllerMessageRequestUnion.md
 docs/ControllerRoomResponse.md
 docs/DefaultApi.md
 docs/DtoAddUserToTeamResponse.md
+docs/DtoCreateEventRequest.md
 docs/DtoCreateQuizResponse.md
 docs/DtoDirectMessageRequest.md
+docs/DtoEventDTO.md
 docs/DtoFileListResponse.md
 docs/DtoFileUploadRequest.md
 docs/DtoFileUploadResponse.md
@@ -31,6 +33,11 @@ docs/DtoSolveQuizResponse.md
 docs/DtoStatisticsResponse.md
 docs/DtoTeamMessageRequest.md
 docs/DtoTeamRequest.md
+docs/DtoTeamRequestCreateDTO.md
+docs/DtoTeamRequestItemDTO.md
+docs/DtoTeamRequestsResponseDTO.md
+docs/DtoUpdateEventRequest.md
+docs/DtoUpdateEventStatusRequest.md
 docs/DtoUpdateStatisticsRequest.md
 docs/DtoUserPasswordRequestDTO.md
 docs/DtoUserResponse.md

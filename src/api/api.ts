@@ -40,6 +40,14 @@ export interface DtoAddUserToTeamResponse {
     'team'?: EntityTeam;
     'user'?: EntityUser;
 }
+export interface DtoCreateEventRequest {
+    'description'?: string;
+    'duration'?: number;
+    'initiatorId'?: string;
+    'name'?: string;
+    'startsAt'?: string;
+    'teamId'?: string;
+}
 export interface DtoCreateQuizResponse {
     'quiz_id'?: string;
 }
@@ -47,6 +55,18 @@ export interface DtoDirectMessageRequest {
     'receiverId'?: string;
     'senderId'?: string;
     'textContent'?: string;
+}
+export interface DtoEventDTO {
+    'acceptedCount'?: number;
+    'declinedCount'?: number;
+    'description'?: string;
+    'duration'?: number;
+    'id'?: string;
+    'initiatorId'?: string;
+    'name'?: string;
+    'pendingCount'?: number;
+    'startsAt'?: string;
+    'teamId'?: string;
 }
 export interface DtoFileListResponse {
     'files'?: Array<DtoFileUploadResponse>;
@@ -180,6 +200,28 @@ export interface DtoTeamRequest {
 }
 
 
+export interface DtoTeamRequestCreateDTO {
+    'teamId': string;
+    'userId': string;
+}
+export interface DtoTeamRequestItemDTO {
+    'id'?: string;
+    'teamId'?: string;
+    'userId'?: string;
+}
+export interface DtoTeamRequestsResponseDTO {
+    'requests'?: Array<DtoTeamRequestItemDTO>;
+}
+export interface DtoUpdateEventRequest {
+    'description'?: string;
+    'duration'?: number;
+    'name'?: string;
+    'startsAt'?: string;
+}
+export interface DtoUpdateEventStatusRequest {
+    'status'?: string;
+    'userId'?: string;
+}
 export interface DtoUpdateStatisticsRequest {
     'teamId'?: string;
     'timeSpentOnApp'?: number;
@@ -397,6 +439,245 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get events by team id
+         * @param {string} teamId Team ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsGet: async (teamId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'teamId' is not null or undefined
+            assertParamExists('eventsGet', 'teamId', teamId)
+            const localVarPath = `/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (teamId !== undefined) {
+                localVarQueryParameter['teamId'] = teamId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete event by id
+         * @param {string} id Event ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsIdDelete', 'id', id)
+            const localVarPath = `/events/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get event by id
+         * @param {string} id Event ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdGet: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsIdGet', 'id', id)
+            const localVarPath = `/events/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Update event name, description, start time and/or duration
+         * @summary Update event details
+         * @param {string} id Event ID
+         * @param {DtoUpdateEventRequest} request Update event request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdPatch: async (id: string, request: DtoUpdateEventRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsIdPatch', 'id', id)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('eventsIdPatch', 'request', request)
+            const localVarPath = `/events/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Update user status for event
+         * @param {string} id Event ID
+         * @param {DtoUpdateEventStatusRequest} request Update event status request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdStatusPatch: async (id: string, request: DtoUpdateEventStatusRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsIdStatusPatch', 'id', id)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('eventsIdStatusPatch', 'request', request)
+            const localVarPath = `/events/{id}/status`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Create new event
+         * @param {DtoCreateEventRequest} request Create event request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsPost: async (request: DtoCreateEventRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('eventsPost', 'request', request)
+            const localVarPath = `/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -954,6 +1235,189 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Fetches all pending team requests in the system.
+         * @summary Get all team requests
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/teamRequests`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Accepts a pending team request, adds the user to the team, and deletes the request.
+         * @summary Accept a team request
+         * @param {string} id Team Request ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsIdAcceptPut: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamRequestsIdAcceptPut', 'id', id)
+            const localVarPath = `/teamRequests/{id}/accept`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Rejects and deletes a pending team request.
+         * @summary Reject a team request
+         * @param {string} id Team Request ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsIdRejectDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamRequestsIdRejectDelete', 'id', id)
+            const localVarPath = `/teamRequests/{id}/reject`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Creates a join request for a user to join a team.
+         * @summary Create a new team request
+         * @param {DtoTeamRequestCreateDTO} request Team and User IDs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsPost: async (request: DtoTeamRequestCreateDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('teamRequestsPost', 'request', request)
+            const localVarPath = `/teamRequests`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Fetches all pending team requests created by a given user.
+         * @summary Get all team requests for a specific user
+         * @param {string} userId User ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsUserUserIdGet: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('teamRequestsUserUserIdGet', 'userId', userId)
+            const localVarPath = `/teamRequests/user/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get teams - all teams, by name, or by prefix with limit
          * @summary Get teams with optional filtering
          * @param {string} [name] Filter by exact name
@@ -1284,6 +1748,43 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(team, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get all users that are members of a specific team
+         * @summary Get users by team ID
+         * @param {string} id Team ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdUsersGet: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('teamsIdUsersGet', 'id', id)
+            const localVarPath = `/teams/{id}/users`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2089,6 +2590,86 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * 
+         * @summary Get events by team id
+         * @param {string} teamId Team ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsGet(teamId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<DtoEventDTO>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsGet(teamId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.eventsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Delete event by id
+         * @param {string} id Event ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsIdDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: any; }>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsIdDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.eventsIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get event by id
+         * @param {string} id Event ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsIdGet(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoEventDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsIdGet(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.eventsIdGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Update event name, description, start time and/or duration
+         * @summary Update event details
+         * @param {string} id Event ID
+         * @param {DtoUpdateEventRequest} request Update event request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsIdPatch(id: string, request: DtoUpdateEventRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoEventDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsIdPatch(id, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.eventsIdPatch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Update user status for event
+         * @param {string} id Event ID
+         * @param {DtoUpdateEventStatusRequest} request Update event status request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsIdStatusPatch(id: string, request: DtoUpdateEventStatusRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoEventDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsIdStatusPatch(id, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.eventsIdStatusPatch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Create new event
+         * @param {DtoCreateEventRequest} request Create event request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsPost(request: DtoCreateEventRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoEventDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsPost(request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.eventsPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Send a friend request from one user to another
          * @summary Send a friend request
          * @param {string} fromUserId Sender User ID
@@ -2270,6 +2851,70 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Fetches all pending team requests in the system.
+         * @summary Get all team requests
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamRequestsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoTeamRequestsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamRequestsGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamRequestsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Accepts a pending team request, adds the user to the team, and deletes the request.
+         * @summary Accept a team request
+         * @param {string} id Team Request ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamRequestsIdAcceptPut(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoAddUserToTeamResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamRequestsIdAcceptPut(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamRequestsIdAcceptPut']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Rejects and deletes a pending team request.
+         * @summary Reject a team request
+         * @param {string} id Team Request ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamRequestsIdRejectDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: string; }>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamRequestsIdRejectDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamRequestsIdRejectDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Creates a join request for a user to join a team.
+         * @summary Create a new team request
+         * @param {DtoTeamRequestCreateDTO} request Team and User IDs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamRequestsPost(request: DtoTeamRequestCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoTeamRequestItemDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamRequestsPost(request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamRequestsPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Fetches all pending team requests created by a given user.
+         * @summary Get all team requests for a specific user
+         * @param {string} userId User ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamRequestsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DtoTeamRequestsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamRequestsUserUserIdGet(userId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamRequestsUserUserIdGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Get teams - all teams, by name, or by prefix with limit
          * @summary Get teams with optional filtering
          * @param {string} [name] Filter by exact name
@@ -2379,6 +3024,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.teamsIdPut(id, team, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamsIdPut']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get all users that are members of a specific team
+         * @summary Get users by team ID
+         * @param {string} id Team ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async teamsIdUsersGet(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<DtoUserResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.teamsIdUsersGet(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.teamsIdUsersGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2667,6 +3325,68 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.authOwnerIdPost(id, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary Get events by team id
+         * @param {string} teamId Team ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsGet(teamId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<DtoEventDTO>> {
+            return localVarFp.eventsGet(teamId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete event by id
+         * @param {string} id Event ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<{ [key: string]: any; }> {
+            return localVarFp.eventsIdDelete(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get event by id
+         * @param {string} id Event ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdGet(id: string, options?: RawAxiosRequestConfig): AxiosPromise<DtoEventDTO> {
+            return localVarFp.eventsIdGet(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Update event name, description, start time and/or duration
+         * @summary Update event details
+         * @param {string} id Event ID
+         * @param {DtoUpdateEventRequest} request Update event request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdPatch(id: string, request: DtoUpdateEventRequest, options?: RawAxiosRequestConfig): AxiosPromise<DtoEventDTO> {
+            return localVarFp.eventsIdPatch(id, request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Update user status for event
+         * @param {string} id Event ID
+         * @param {DtoUpdateEventStatusRequest} request Update event status request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsIdStatusPatch(id: string, request: DtoUpdateEventStatusRequest, options?: RawAxiosRequestConfig): AxiosPromise<DtoEventDTO> {
+            return localVarFp.eventsIdStatusPatch(id, request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Create new event
+         * @param {DtoCreateEventRequest} request Create event request
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsPost(request: DtoCreateEventRequest, options?: RawAxiosRequestConfig): AxiosPromise<DtoEventDTO> {
+            return localVarFp.eventsPost(request, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Send a friend request from one user to another
          * @summary Send a friend request
          * @param {string} fromUserId Sender User ID
@@ -2809,6 +3529,55 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.quizzesUserUserIdTeamTeamIdGet(userId, teamId, pageSize, lastKey, options).then((request) => request(axios, basePath));
         },
         /**
+         * Fetches all pending team requests in the system.
+         * @summary Get all team requests
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsGet(options?: RawAxiosRequestConfig): AxiosPromise<DtoTeamRequestsResponseDTO> {
+            return localVarFp.teamRequestsGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Accepts a pending team request, adds the user to the team, and deletes the request.
+         * @summary Accept a team request
+         * @param {string} id Team Request ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsIdAcceptPut(id: string, options?: RawAxiosRequestConfig): AxiosPromise<DtoAddUserToTeamResponse> {
+            return localVarFp.teamRequestsIdAcceptPut(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Rejects and deletes a pending team request.
+         * @summary Reject a team request
+         * @param {string} id Team Request ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsIdRejectDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<{ [key: string]: string; }> {
+            return localVarFp.teamRequestsIdRejectDelete(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Creates a join request for a user to join a team.
+         * @summary Create a new team request
+         * @param {DtoTeamRequestCreateDTO} request Team and User IDs
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsPost(request: DtoTeamRequestCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<DtoTeamRequestItemDTO> {
+            return localVarFp.teamRequestsPost(request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Fetches all pending team requests created by a given user.
+         * @summary Get all team requests for a specific user
+         * @param {string} userId User ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamRequestsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<DtoTeamRequestsResponseDTO> {
+            return localVarFp.teamRequestsUserUserIdGet(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get teams - all teams, by name, or by prefix with limit
          * @summary Get teams with optional filtering
          * @param {string} [name] Filter by exact name
@@ -2895,6 +3664,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         teamsIdPut(id: string, team: EntityTeam, options?: RawAxiosRequestConfig): AxiosPromise<EntityTeam> {
             return localVarFp.teamsIdPut(id, team, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get all users that are members of a specific team
+         * @summary Get users by team ID
+         * @param {string} id Team ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        teamsIdUsersGet(id: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<DtoUserResponse>> {
+            return localVarFp.teamsIdUsersGet(id, options).then((request) => request(axios, basePath));
         },
         /**
          * Create a new team with the provided details
@@ -3125,6 +3904,74 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @summary Get events by team id
+     * @param {string} teamId Team ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public eventsGet(teamId: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).eventsGet(teamId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete event by id
+     * @param {string} id Event ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public eventsIdDelete(id: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).eventsIdDelete(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get event by id
+     * @param {string} id Event ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public eventsIdGet(id: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).eventsIdGet(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Update event name, description, start time and/or duration
+     * @summary Update event details
+     * @param {string} id Event ID
+     * @param {DtoUpdateEventRequest} request Update event request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public eventsIdPatch(id: string, request: DtoUpdateEventRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).eventsIdPatch(id, request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Update user status for event
+     * @param {string} id Event ID
+     * @param {DtoUpdateEventStatusRequest} request Update event status request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public eventsIdStatusPatch(id: string, request: DtoUpdateEventStatusRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).eventsIdStatusPatch(id, request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Create new event
+     * @param {DtoCreateEventRequest} request Create event request
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public eventsPost(request: DtoCreateEventRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).eventsPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Send a friend request from one user to another
      * @summary Send a friend request
      * @param {string} fromUserId Sender User ID
@@ -3280,6 +4127,60 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
+     * Fetches all pending team requests in the system.
+     * @summary Get all team requests
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamRequestsGet(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamRequestsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Accepts a pending team request, adds the user to the team, and deletes the request.
+     * @summary Accept a team request
+     * @param {string} id Team Request ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamRequestsIdAcceptPut(id: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamRequestsIdAcceptPut(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Rejects and deletes a pending team request.
+     * @summary Reject a team request
+     * @param {string} id Team Request ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamRequestsIdRejectDelete(id: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamRequestsIdRejectDelete(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Creates a join request for a user to join a team.
+     * @summary Create a new team request
+     * @param {DtoTeamRequestCreateDTO} request Team and User IDs
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamRequestsPost(request: DtoTeamRequestCreateDTO, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamRequestsPost(request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Fetches all pending team requests created by a given user.
+     * @summary Get all team requests for a specific user
+     * @param {string} userId User ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamRequestsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamRequestsUserUserIdGet(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Get teams - all teams, by name, or by prefix with limit
      * @summary Get teams with optional filtering
      * @param {string} [name] Filter by exact name
@@ -3373,6 +4274,17 @@ export class DefaultApi extends BaseAPI {
      */
     public teamsIdPut(id: string, team: EntityTeam, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).teamsIdPut(id, team, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get all users that are members of a specific team
+     * @summary Get users by team ID
+     * @param {string} id Team ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public teamsIdUsersGet(id: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).teamsIdUsersGet(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -6,6 +6,12 @@ All URIs are relative to *http://localhost*
 |------------- | ------------- | -------------|
 |[**authMiddlewarePost**](#authmiddlewarepost) | **POST** /auth/middleware | JWT Authentication Middleware|
 |[**authOwnerIdPost**](#authowneridpost) | **POST** /auth/owner/{id} | Owner Authorization Middleware|
+|[**eventsGet**](#eventsget) | **GET** /events | Get events by team id|
+|[**eventsIdDelete**](#eventsiddelete) | **DELETE** /events/{id} | Delete event by id|
+|[**eventsIdGet**](#eventsidget) | **GET** /events/{id} | Get event by id|
+|[**eventsIdPatch**](#eventsidpatch) | **PATCH** /events/{id} | Update event details|
+|[**eventsIdStatusPatch**](#eventsidstatuspatch) | **PATCH** /events/{id}/status | Update user status for event|
+|[**eventsPost**](#eventspost) | **POST** /events | Create new event|
 |[**friendRequestsFromUserIdToUserIdPost**](#friendrequestsfromuseridtouseridpost) | **POST** /friend-requests/{fromUserId}/{toUserId} | Send a friend request|
 |[**friendRequestsFromUserIdToUserIdPut**](#friendrequestsfromuseridtouseridput) | **PUT** /friend-requests/{fromUserId}/{toUserId} | Respond to a friend request|
 |[**friendRequestsUserIdGet**](#friendrequestsuseridget) | **GET** /friend-requests/{userId} | Get pending friend requests|
@@ -19,6 +25,11 @@ All URIs are relative to *http://localhost*
 |[**quizzesPost**](#quizzespost) | **POST** /quizzes | Create a new quiz|
 |[**quizzesTeamTeamIdGet**](#quizzesteamteamidget) | **GET** /quizzes/team/{teamId} | Get quizzes by team with pagination|
 |[**quizzesUserUserIdTeamTeamIdGet**](#quizzesuseruseridteamteamidget) | **GET** /quizzes/user/{userId}/team/{teamId} | Get quizzes by user with pagination|
+|[**teamRequestsGet**](#teamrequestsget) | **GET** /teamRequests | Get all team requests|
+|[**teamRequestsIdAcceptPut**](#teamrequestsidacceptput) | **PUT** /teamRequests/{id}/accept | Accept a team request|
+|[**teamRequestsIdRejectDelete**](#teamrequestsidrejectdelete) | **DELETE** /teamRequests/{id}/reject | Reject a team request|
+|[**teamRequestsPost**](#teamrequestspost) | **POST** /teamRequests | Create a new team request|
+|[**teamRequestsUserUserIdGet**](#teamrequestsuseruseridget) | **GET** /teamRequests/user/{userId} | Get all team requests for a specific user|
 |[**teamsGet**](#teamsget) | **GET** /teams | Get teams with optional filtering|
 |[**teamsIdDelete**](#teamsiddelete) | **DELETE** /teams/{id} | Delete a team|
 |[**teamsIdFilesFileIdDelete**](#teamsidfilesfileiddelete) | **DELETE** /teams/{id}/files/{fileId} | Delete a file|
@@ -27,6 +38,7 @@ All URIs are relative to *http://localhost*
 |[**teamsIdFilesPost**](#teamsidfilespost) | **POST** /teams/{id}/files | Upload a file to a team (base64 content)|
 |[**teamsIdGet**](#teamsidget) | **GET** /teams/{id} | Get a team by ID|
 |[**teamsIdPut**](#teamsidput) | **PUT** /teams/{id} | Update a team|
+|[**teamsIdUsersGet**](#teamsidusersget) | **GET** /teams/{id}/users | Get users by team ID|
 |[**teamsPost**](#teamspost) | **POST** /teams | Create a new team|
 |[**teamsUsersDelete**](#teamsusersdelete) | **DELETE** /teams/users | Delete a user from a team|
 |[**teamsUsersPut**](#teamsusersput) | **PUT** /teams/users | Add a user to a team|
@@ -151,6 +163,328 @@ const { status, data } = await apiInstance.authOwnerIdPost(
 |-------------|-------------|------------------|
 |**200** | User is authorized |  -  |
 |**403** | Forbidden |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsGet**
+> Array<DtoEventDTO> eventsGet()
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let teamId: string; //Team ID (default to undefined)
+
+const { status, data } = await apiInstance.eventsGet(
+    teamId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **teamId** | [**string**] | Team ID | defaults to undefined|
+
+
+### Return type
+
+**Array<DtoEventDTO>**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsIdDelete**
+> { [key: string]: any; } eventsIdDelete()
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Event ID (default to undefined)
+
+const { status, data } = await apiInstance.eventsIdDelete(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Event ID | defaults to undefined|
+
+
+### Return type
+
+**{ [key: string]: any; }**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Event deleted successfully |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsIdGet**
+> DtoEventDTO eventsIdGet()
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Event ID (default to undefined)
+
+const { status, data } = await apiInstance.eventsIdGet(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Event ID | defaults to undefined|
+
+
+### Return type
+
+**DtoEventDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**409** | this status option is already set |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsIdPatch**
+> DtoEventDTO eventsIdPatch(request)
+
+Update event name, description, start time and/or duration
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration,
+    DtoUpdateEventRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Event ID (default to undefined)
+let request: DtoUpdateEventRequest; //Update event request
+
+const { status, data } = await apiInstance.eventsIdPatch(
+    id,
+    request
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **request** | **DtoUpdateEventRequest**| Update event request | |
+| **id** | [**string**] | Event ID | defaults to undefined|
+
+
+### Return type
+
+**DtoEventDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsIdStatusPatch**
+> DtoEventDTO eventsIdStatusPatch(request)
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration,
+    DtoUpdateEventStatusRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Event ID (default to undefined)
+let request: DtoUpdateEventStatusRequest; //Update event status request
+
+const { status, data } = await apiInstance.eventsIdStatusPatch(
+    id,
+    request
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **request** | **DtoUpdateEventStatusRequest**| Update event status request | |
+| **id** | [**string**] | Event ID | defaults to undefined|
+
+
+### Return type
+
+**DtoEventDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsPost**
+> DtoEventDTO eventsPost(request)
+
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration,
+    DtoCreateEventRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let request: DtoCreateEventRequest; //Create event request
+
+const { status, data } = await apiInstance.eventsPost(
+    request
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **request** | **DtoCreateEventRequest**| Create event request | |
+
+
+### Return type
+
+**DtoEventDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** | Created |  -  |
+|**400** | Bad Request |  -  |
+|**500** | Internal Server Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -877,6 +1211,263 @@ const { status, data } = await apiInstance.quizzesUserUserIdTeamTeamIdGet(
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **teamRequestsGet**
+> DtoTeamRequestsResponseDTO teamRequestsGet()
+
+Fetches all pending team requests in the system.
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+const { status, data } = await apiInstance.teamRequestsGet();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**DtoTeamRequestsResponseDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamRequestsIdAcceptPut**
+> DtoAddUserToTeamResponse teamRequestsIdAcceptPut()
+
+Accepts a pending team request, adds the user to the team, and deletes the request.
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team Request ID (default to undefined)
+
+const { status, data } = await apiInstance.teamRequestsIdAcceptPut(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Team Request ID | defaults to undefined|
+
+
+### Return type
+
+**DtoAddUserToTeamResponse**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request or Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamRequestsIdRejectDelete**
+> { [key: string]: string; } teamRequestsIdRejectDelete()
+
+Rejects and deletes a pending team request.
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team Request ID (default to undefined)
+
+const { status, data } = await apiInstance.teamRequestsIdRejectDelete(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Team Request ID | defaults to undefined|
+
+
+### Return type
+
+**{ [key: string]: string; }**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Team request rejected |  -  |
+|**400** | Bad Request or Not Found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamRequestsPost**
+> DtoTeamRequestItemDTO teamRequestsPost(request)
+
+Creates a join request for a user to join a team.
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration,
+    DtoTeamRequestCreateDTO
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let request: DtoTeamRequestCreateDTO; //Team and User IDs
+
+const { status, data } = await apiInstance.teamRequestsPost(
+    request
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **request** | **DtoTeamRequestCreateDTO**| Team and User IDs | |
+
+
+### Return type
+
+**DtoTeamRequestItemDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** | Created |  -  |
+|**400** | Invalid request or validation error |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamRequestsUserUserIdGet**
+> DtoTeamRequestsResponseDTO teamRequestsUserUserIdGet()
+
+Fetches all pending team requests created by a given user.
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let userId: string; //User ID (default to undefined)
+
+const { status, data } = await apiInstance.teamRequestsUserUserIdGet(
+    userId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **userId** | [**string**] | User ID | defaults to undefined|
+
+
+### Return type
+
+**DtoTeamRequestsResponseDTO**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **teamsGet**
 > Array<EntityTeam> teamsGet()
 
@@ -1321,6 +1912,60 @@ const { status, data } = await apiInstance.teamsIdPut(
 |-------------|-------------|------------------|
 |**200** | OK |  -  |
 |**400** | Bad Request |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **teamsIdUsersGet**
+> Array<DtoUserResponse> teamsIdUsersGet()
+
+Get all users that are members of a specific team
+
+### Example
+
+```typescript
+import {
+    DefaultApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new DefaultApi(configuration);
+
+let id: string; //Team ID (default to undefined)
+
+const { status, data } = await apiInstance.teamsIdUsersGet(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Team ID | defaults to undefined|
+
+
+### Return type
+
+**Array<DtoUserResponse>**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request - Invalid team ID |  -  |
+|**404** | Team not found |  -  |
 |**500** | Internal Server Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
