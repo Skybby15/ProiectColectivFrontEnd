@@ -3,7 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { TeamSidebar } from "./TeamPageComponents/Sidebar/TeamSidebar";
 import { TeamSidebarTrigger } from "./TeamPageComponents/Sidebar/TeamSidebarTrigger";
 import { TeamDashboard } from "./TeamPageComponents/TeamDashboard";
-import { useOpenTeam } from "@/services/react-query/teams";
+import { useGetTeamMembers, useOpenTeam } from "@/services/react-query/teams";
 import { useEffect, useState } from "react";
 import { TeamChatRoom } from "./TeamPageComponents/TeamChatRoom";
 import { Card } from "@/components/ui/card";
@@ -25,6 +25,7 @@ export type Screen =
 export default function TeamPage() {
     const { teamId } = useParams<{teamId: string}>(); 
     const { mutate : openTeam} = useOpenTeam();
+    const { mutate : getMembers} = useGetTeamMembers();
     const navigate = useNavigate();
 
     const [openScreen , setOpenScreen] = useState<Screen>("Dashboard");
@@ -46,6 +47,7 @@ export default function TeamPage() {
         }
 
         openTeam({teamId})
+        getMembers({teamId})
     },[])
 
     return(

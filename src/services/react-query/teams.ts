@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoFileListResponse, DtoFileUploadRequest, DtoFileUploadResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, EntityFile, EntityTeam} from "@/api";
+import type {ControllerMessageRequestUnion, DtoAddUserToTeamResponse, DtoFileListResponse, DtoFileUploadRequest, DtoFileUploadResponse, DtoMessageDTO, DtoTeamMessageRequest, DtoTeamRequest, DtoUserResponse, EntityFile, EntityTeam} from "@/api";
 import { api } from './api'
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";
 import { useAuthStore } from "../stores/useAuthStore";
@@ -201,3 +201,19 @@ export const useGetFile = () => {
 };
 
 
+export const useGetTeamMembers = () => {
+    const teamStore = useTeamStore();
+
+    return useMutation<DtoUserResponse[], Error, { teamId: string }>({
+        mutationFn: ({ teamId }) =>
+            api.teamsIdUsersGet(teamId).then(res => res.data),
+
+        onSuccess: (data) => {
+            if (!data) return;
+            for (const member of data) {
+                console.log(`Member: ${member.username} (ID: ${member.id})`);
+            }
+            teamStore.setTeamMembers(data);
+        },
+    });
+}
