@@ -144,6 +144,8 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
   },[isAtBottom])
 
   const visibleRequests = teamRequests?.filter(r => r.teamId === openTeam?.id) ?? [];
+  const hasContent = teamMessages.length > 0 || visibleRequests.length > 0;
+
   useEffect(() => {
     visibleRequests.forEach((req) => {
       if (!req.userId) return;
@@ -194,15 +196,6 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
                       </div>
                   ))}
 
-                  {/* placeholder dacă NU sunt mesaje */}
-                  {teamMessages.length === 0 && (
-                      <div className="flex justify-center items-center gap-x-2 py-4">
-                        <p className="text-primary opacity-30">
-                          No messages here , be the first to light up the team !
-                        </p>
-                      </div>
-                  )}
-
                   {/* team requests messages */}
                   {visibleRequests.map((req) => (
                       <div key={req.id} className="rounded-md border p-3">
@@ -234,6 +227,14 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
                         </div>
                       </div>
                   ))}
+
+                  {!hasContent && (
+                      <div className="flex justify-center items-center gap-x-2 py-4">
+                        <p className="text-primary opacity-30">
+                          No messages here , be the first to light up the team !
+                        </p>
+                      </div>
+                  )}
 
                   <div ref={messagesEndRef} />
                 </div>
