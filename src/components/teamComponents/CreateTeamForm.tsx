@@ -10,7 +10,7 @@ import {useAuthStore} from "@/services/stores/useAuthStore.ts";
 
 
 
-export default function CreateTeamForm() {
+export default function CreateTeamForm({ onCreated }: { onCreated?: () => void }) {
     const [teamName, setTeamName] = useState("")
     const [subject, setSubject] = useState("")
     const [teamDescription, setDescription] = useState("")
@@ -106,7 +106,12 @@ export default function CreateTeamForm() {
                                 description: teamDescription,
                                 teamtopic: subject as ModelTopicOfInterest,
                                 userid: user?.id
-                            });
+                            },
+                                {
+                                    onSuccess: () => {
+                                        onCreated?.();
+                                    },
+                                });
                         }}>
                     Create Team
                 </Button>

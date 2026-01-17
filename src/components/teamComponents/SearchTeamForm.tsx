@@ -1,20 +1,21 @@
-import { useState, useMemo } from "react";
+import {useState, useMemo, useEffect} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
 import {useAuthStore} from "@/services/stores/useAuthStore.ts";
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";
-import { useCreateTeamRequest } from "@/services/react-query/teamsRequests";
+import {useCreateTeamRequest, useGetAllTeamRequests} from "@/services/react-query/teamsRequests";
 import {useJoinTeam} from "@/services/react-query/teams";
 
 export default function SearchTeamForm() {
     const [teamName, setTeamName] = useState("");
-    const {mutate: createTeamRequest, isPending: isRequestPending} = useCreateTeamRequest();
-    const {mutate: joinTeam, isPending: isJoinPending} = useJoinTeam();
+    const {mutate: createTeamRequest} = useCreateTeamRequest();
+    const {mutate: joinTeam} = useJoinTeam();
     const {user} = useAuthStore();
-    const {teams, requestedTeamIds, addRequestedTeamId} = useTeamStore();
+    const {teams, requestedTeamIds, addRequestedTeamId, setTeamRequests, setRequestedTeamIds} = useTeamStore();
     const [pendingTeamId, setPendingTeamId] = useState<string | null>(null);
+    const { mutateAsync: getAllTeamRequests } = useGetAllTeamRequests();
     const filteredTeams = useMemo(() => {
         if (!teamName.trim()) return [];
 
@@ -24,6 +25,22 @@ export default function SearchTeamForm() {
         );
     }, [teamName, teams, user?.id]);
 
+    useEffect(() => {
+        if (!user?.id) return;
+
+        getAllTeamRequests()
+            .then((res) => {
+                const reqs = res?.requests ?? [];
+                setTeamRequests(reqs);
+
+                const myRequested = reqs
+                    .filter(r => r.userId === user.id)
+                    .map(r => r.teamId);
+
+                setRequestedTeamIds(myRequested);
+            })
+            .catch(() => {});
+    }, [user?.id]);
 
     return (
         <form className="w-full text-white space-y-5">
