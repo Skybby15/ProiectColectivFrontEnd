@@ -254,7 +254,7 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
 
 
           {/* Input Area */}
-          <div className="border-t p-4 bg-background flex gap-2">
+          <div className="border-t p-4 bg-background flex gap-2 justify-self-end">
             <Input
               placeholder="Type a message..."
               value={inputValue}

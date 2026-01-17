@@ -9,6 +9,11 @@ type VoiceState = {
   users: VoiceUser[];
   ws?: WebSocket;
   speaking: Record<string, boolean>;
+  // Screenshare state
+  presenterId?: string;
+  screenStream?: MediaStream;
+  // Mute state
+  isMuted: boolean;
   setRooms: (rooms: RoomResponse[]) => void;
   selectRoom: (roomId?: string) => void;
   setUsers: (users: VoiceUser[]) => void;
@@ -16,6 +21,9 @@ type VoiceState = {
   removeUser: (userId: string) => void;
   setWs: (ws?: WebSocket) => void;
   setSpeaking: (userId: string, val: boolean) => void;
+  setPresenterId: (id?: string) => void;
+  setScreenStream: (stream?: MediaStream) => void;
+  setIsMuted: (v: boolean) => void;
   reset: () => void;
 };
 
@@ -25,7 +33,13 @@ export const useVoiceStore = create<VoiceState>((set, get) => ({
   users: [],
   ws: undefined,
   speaking: {},
+  presenterId: undefined,
+  screenStream: undefined,
+  isMuted: true,
   setRooms: (rooms) => set({ rooms }),
+  setPresenterId: (id) => set({ presenterId: id }),
+  setScreenStream: (stream) => set({ screenStream: stream }),
+  setIsMuted: (v) => set({ isMuted: v }),
   selectRoom: (roomId) => set({ selectedRoomId: roomId, users: [] }),
   setUsers: (users) => set({ users }),
   addUser: (user) => set((s) => {
@@ -50,7 +64,10 @@ export const useVoiceStore = create<VoiceState>((set, get) => ({
       if (current.ws) {
         try { current.ws.close(); } catch {}
       }
+      if (current.screenStream) {
+        try { current.screenStream.getTracks().forEach(t => t.stop()); } catch {}
+      }
     } catch {}
-    set({ rooms: [], selectedRoomId: undefined, users: [], ws: undefined, speaking: {} });
+    set({ rooms: [], selectedRoomId: undefined, users: [], ws: undefined, speaking: {}, presenterId: undefined, screenStream: undefined, isMuted: true });
   },
 }));
