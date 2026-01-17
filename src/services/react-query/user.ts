@@ -1,5 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import type { DtoStatisticsResponse, DtoUserPasswordRequestDTO, DtoUserUpdateRequestDTO, DtoUserUpdateResponseDTO } from "@/api";
+import type {
+  DtoStatisticsResponse,
+  DtoUserPasswordRequestDTO,
+  DtoUserUpdateRequestDTO,
+  DtoUserUpdateResponseDTO,
+} from "@/api";
 import { api } from "./api"
 import { useAuthStore } from "../stores/useAuthStore";
 import { useStatisticsStore } from "../stores/useStatisticsStore";

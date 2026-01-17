@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import Navbar from "@/components/teamComponents/NavBar"
 import {TeamCard} from "@/components/teamComponents/TeamCard"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ export default function StudyTeams() {
     const {user} = useAuthStore();
     const {teams} = useTeamStore();
     const {mutate: getTeams, isPending} = useGetTeams();
-
+    const [createOpen, setCreateOpen] = useState(false);
     useEffect(() => {
         getTeams();
     }, []);
@@ -52,14 +52,14 @@ export default function StudyTeams() {
                             </DialogContent>
                         </Dialog>
 
-                        <Dialog>
+                        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                             <DialogTrigger asChild>
                                 <Button className="bg-gray-100 text-black px-4 py-2 rounded-md font-medium hover:bg-gray-200">
                                     <Plus/> Create Team
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
-                                <CreateTeamForm />
+                                <CreateTeamForm onCreated={() => setCreateOpen(false)}/>
                             </DialogContent>
                         </Dialog>
                     </div>

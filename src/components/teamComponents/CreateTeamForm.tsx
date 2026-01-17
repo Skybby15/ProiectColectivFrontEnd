@@ -10,10 +10,11 @@ import {useAuthStore} from "@/services/stores/useAuthStore.ts";
 
 
 
-export default function CreateTeamForm() {
+export default function CreateTeamForm({ onCreated }: { onCreated?: () => void }) {
     const [teamName, setTeamName] = useState("")
     const [subject, setSubject] = useState("")
     const [teamDescription, setDescription] = useState("")
+    const [isPublic, setIsPublic] = useState(true);
     const {user} = useAuthStore();
     const { mutate: addTeam, isPending } = useAddTeam();
 
@@ -73,6 +74,20 @@ export default function CreateTeamForm() {
                 />
             </div>
 
+            {/* Publicity */}
+            <div className="flex items-center gap-3">
+                <input
+                    id="isPublic"
+                    type="checkbox"
+                    checked={isPublic}
+                    onChange={(e) => setIsPublic(e.target.checked)}
+                    className="h-4 w-4 accent-green-600"
+                />
+                <Label htmlFor="isPublic" className="text-sm text-gray-300">
+                    Public team (anyone can join directly)
+                </Label>
+            </div>
+
 
             {/* Buttons */}
             <div className="flex justify-between gap-3 pt-4 w-full">
@@ -87,11 +102,16 @@ export default function CreateTeamForm() {
                         onClick={() => {
                             addTeam({
                                 name: teamName,
-                                ispublic: true,
+                                ispublic: isPublic,
                                 description: teamDescription,
                                 teamtopic: subject as ModelTopicOfInterest,
                                 userid: user?.id
-                            });
+                            },
+                                {
+                                    onSuccess: () => {
+                                        onCreated?.();
+                                    },
+                                });
                         }}>
                     Create Team
                 </Button>
