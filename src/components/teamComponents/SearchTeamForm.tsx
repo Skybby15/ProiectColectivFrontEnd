@@ -37,7 +37,7 @@ export default function SearchTeamForm() {
                     .filter(r => r.userId === user.id)
                     .map(r => r.teamId);
 
-                setRequestedTeamIds(myRequested);
+                setRequestedTeamIds(myRequested as string[]);
             })
             .catch(() => {});
     }, [user?.id]);

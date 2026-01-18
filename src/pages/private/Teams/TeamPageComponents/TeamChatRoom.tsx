@@ -203,7 +203,7 @@ export function TeamChatRoom({ roomId }: { roomId: number }) {
                           <div className="min-w-0">
                             <p className="text-sm font-semibold">Join request</p>
                             <p className="text-sm text-muted-foreground">
-                              User <span className="font-medium">{usersById[req.userId]?.username ?? req.userId}</span> wants to join this team
+                              User <span className="font-medium">{usersById[req.userId!]?.username ?? req.userId}</span> wants to join this team
                             </p>
                           </div>
 
