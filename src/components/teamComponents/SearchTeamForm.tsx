@@ -1,18 +1,21 @@
-import { useState, useMemo } from "react";
+import {useState, useMemo, useEffect} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DialogClose } from "@/components/ui/dialog";
 import {useAuthStore} from "@/services/stores/useAuthStore.ts";
 import {useTeamStore} from "@/services/stores/useTeamStore.ts";
-import { useCreateTeamRequest } from "@/services/react-query/teamsRequests";
-
+import {useCreateTeamRequest, useGetAllTeamRequests} from "@/services/react-query/teamsRequests";
+import {useJoinTeam} from "@/services/react-query/teams";
 
 export default function SearchTeamForm() {
     const [teamName, setTeamName] = useState("");
-    const {mutate: createTeamRequest, isPending} = useCreateTeamRequest();
+    const {mutate: createTeamRequest} = useCreateTeamRequest();
+    const {mutate: joinTeam} = useJoinTeam();
     const {user} = useAuthStore();
-    const {teams} = useTeamStore();
+    const {teams, requestedTeamIds, addRequestedTeamId, setTeamRequests, setRequestedTeamIds} = useTeamStore();
+    const [pendingTeamId, setPendingTeamId] = useState<string | null>(null);
+    const { mutateAsync: getAllTeamRequests } = useGetAllTeamRequests();
     const filteredTeams = useMemo(() => {
         if (!teamName.trim()) return [];
 
@@ -22,6 +25,22 @@ export default function SearchTeamForm() {
         );
     }, [teamName, teams, user?.id]);
 
+    useEffect(() => {
+        if (!user?.id) return;
+
+        getAllTeamRequests()
+            .then((res) => {
+                const reqs = res?.requests ?? [];
+                setTeamRequests(reqs);
+
+                const myRequested = reqs
+                    .filter(r => r.userId === user.id)
+                    .map(r => r.teamId);
+
+                setRequestedTeamIds(myRequested);
+            })
+            .catch(() => {});
+    }, [user?.id]);
 
     return (
         <form className="w-full text-white space-y-5">
@@ -50,33 +69,59 @@ export default function SearchTeamForm() {
                     <p className="text-gray-400 text-center">No teams found.</p>
                 )}
 
-                {filteredTeams.map(team => (
-                    <div
-                        key={team.id}
-                        className="flex items-center justify-between p-2 border-b border-gray-700"
-                    >
-                        <span>{team.name} </span>
+                {filteredTeams.map(team => {
+                    const isThisPending = pendingTeamId === team.id;
+                    const isAlreadyRequested = !!team.id && requestedTeamIds.includes(team.id);
 
-                        <Button
-                            type = "button"
-                            disabled={isPending}
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => {
-                                console.log("Clicked team:", team.id, "user:", user?.id);
-                                if (!team.id || !user?.id) return;
+                    return (
+                        <div key={team.id} className="flex items-center justify-between p-2 border-b border-gray-700">
+                            <span>{team.name}</span>
 
-                                createTeamRequest({
-                                    teamId: team.id!,
-                                    userId: user.id!
-                                });
-                            }}
-                        >
-                            {isPending ? "Sending Request..." : "Request Join"}
-                        </Button>
+                            <Button
+                                type="button"
+                                disabled={isThisPending || isAlreadyRequested}
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+                                onClick={() => {
+                                    if (!team.id || !user?.id) return;
 
-                    </div>
-                ))}
+                                    const id = team.id;
+                                    setPendingTeamId(id);
+
+                                    if (team.ispublic) {
+                                        joinTeam(
+                                            { teamId: id, userId: user.id },
+                                            {
+                                                onSuccess: () => {
+                                                    addRequestedTeamId(id);
+                                                    setPendingTeamId(null);
+                                                },
+                                                onError: () => setPendingTeamId(null),
+                                            }
+                                        );
+                                    } else {
+                                        createTeamRequest(
+                                            { teamId: id, userId: user.id },
+                                            {
+                                                onSuccess: () => {
+                                                    addRequestedTeamId(id);
+                                                    setPendingTeamId(null);
+                                                },
+                                                onError: () => setPendingTeamId(null),
+                                            }
+                                        );
+                                    }
+                                }}
+                            >
+                                {isAlreadyRequested
+                                    ? (team.ispublic ? "Joined" : "Requested")
+                                    : isThisPending
+                                        ? (team.ispublic ? "Joining..." : "Sending Request...")
+                                        : (team.ispublic ? "Join" : "Request Join")}
+                            </Button>
+                        </div>
+                    );
+                })}
             </div>
 
 

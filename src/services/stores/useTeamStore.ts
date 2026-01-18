@@ -27,6 +27,12 @@ interface TeamState {
     setTeamRequests: (reqs: DtoTeamRequestItemDTO[]) => void;
     removeTeamRequest: (id: string) => void;
     addTeamRequest: (req: DtoTeamRequestItemDTO) => void;
+
+    requestedTeamIds: string[];
+    setRequestedTeamIds: (ids: string[]) => void;
+    addRequestedTeamId: (teamId: string) => void;
+
+
     addTeamFilesMeta: (files: DtoFileUploadResponse[]) => void;
     addTeamFile: (file: DtoFileUploadResponse) => void;
     removeTeamFile: (fileId: string) => void;
@@ -40,6 +46,8 @@ export const useTeamStore = create<TeamState>((set,get) => {
         openTeam: undefined,
         teamMessages: [],
         teamRequests: [],
+
+        requestedTeamIds: [],
         teamFiles: [],
         teamMembers: [],
         getTeamMemberWithId: (id: string) => {
@@ -108,6 +116,15 @@ export const useTeamStore = create<TeamState>((set,get) => {
 
         addTeamRequest: (req) =>
             set({ teamRequests: [...get().teamRequests, req] }),
+
+        setRequestedTeamIds: (ids) => set({ requestedTeamIds: ids }),
+
+        addRequestedTeamId: (teamId) => {
+            const current = get().requestedTeamIds;
+            if (current.includes(teamId)) return;
+            set({ requestedTeamIds: [...current, teamId] });
+        },
+
         addTeamFilesMeta: (files) => {
             set(state => {
                 const map = new Map(state.teamFiles.map(f => [f.id, f]));
